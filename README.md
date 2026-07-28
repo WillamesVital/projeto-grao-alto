@@ -10,7 +10,7 @@ integração real com nenhum gateway e nenhuma cobrança é feita.**
 
 - Next.js 16 (App Router) + TypeScript + React 19
 - Tailwind CSS v4 (tokens de cor/tipografia/espaçamento do design system)
-- Prisma + SQLite
+- Prisma + Postgres
 - Autenticação própria por sessão (cookie httpOnly + JWT), sem serviço externo
 - E-mails (confirmação de cadastro, redefinição de senha, confirmação de
   pedido) só são "enviados" via log no console — não há SMTP configurado
@@ -18,13 +18,36 @@ integração real com nenhum gateway e nenhuma cobrança é feita.**
 
 ## Rodando localmente
 
+Requer um Postgres rodando localmente (ou qualquer connection string de um
+Postgres gerenciado).
+
 ```bash
 npm install
-cp .env.example .env      # ajuste se quiser
-npm run db:migrate        # cria/atualiza o banco SQLite local
+cp .env.example .env      # aponte DATABASE_URL para o seu Postgres
+npm run db:push           # cria/atualiza as tabelas
 npm run db:seed           # popula produtos, faixas de frete, usuários de teste
 npm run dev
 ```
+
+## Deploy na Vercel
+
+1. Importe o repositório na Vercel (framework Next.js é detectado automaticamente).
+2. Na aba **Storage** do projeto, crie um banco **Postgres** — a Vercel injeta
+   `DATABASE_URL` automaticamente nas variáveis de ambiente.
+3. Configure `AUTH_SECRET` (valor aleatório forte, ex: `openssl rand -hex 32`)
+   e `APP_URL` (a URL pública do deploy) nas variáveis de ambiente do projeto.
+4. O build (`npm run build`) já roda `prisma db push` automaticamente antes do
+   `next build`, então as tabelas são criadas no primeiro deploy sem precisar
+   de nenhum passo manual de migração.
+5. Rode `npm run db:seed` uma vez apontando `DATABASE_URL` para o banco de
+   produção (localmente, ou via `vercel env pull` + `npm run db:seed`) para
+   criar os produtos e usuários de teste.
+
+**Nota de engenharia:** este projeto usa `prisma db push` em vez de migrations
+versionadas, para simplificar o deploy de um projeto de curso — não há
+histórico de alterações de schema nem proteção extra contra perda de dados em
+mudanças destrutivas de coluna. Para um projeto real, o caminho recomendado é
+`prisma migrate deploy` com migrations commitadas.
 
 Abra [http://localhost:3000](http://localhost:3000).
 
