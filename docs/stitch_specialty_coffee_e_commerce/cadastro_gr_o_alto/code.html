@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cadastro - Grão Alto Cafés Especiais</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-container": "#ae8d87",
+                "tertiary-fixed": "#c5efad",
+                "on-tertiary-container": "#789f65",
+                "tertiary": "#051d00",
+                "paper-offwhite": "#FDFBF7",
+                "secondary-fixed": "#ffddb8",
+                "outline": "#827472",
+                "secondary-fixed-dim": "#ffb95f",
+                "secondary": "#855300",
+                "on-tertiary-fixed": "#062100",
+                "error-container": "#ffdad6",
+                "surface-dim": "#dbdad6",
+                "primary-fixed": "#ffdad4",
+                "primary-fixed-dim": "#e3beb8",
+                "tertiary-fixed-dim": "#a9d293",
+                "background": "#fbf9f5",
+                "inverse-surface": "#30312e",
+                "on-tertiary-fixed-variant": "#2d4f1e",
+                "honey-amber": "#D48806",
+                "on-secondary-container": "#6b4200",
+                "surface-container": "#efeeea",
+                "on-secondary-fixed-variant": "#653e00",
+                "surface-variant": "#e4e2de",
+                "on-surface": "#1b1c1a",
+                "coffee-roast": "#3E2723",
+                "primary": "#271310",
+                "inverse-on-surface": "#f2f0ed",
+                "on-error-container": "#93000a",
+                "surface-tint": "#745853",
+                "error-red": "#B00020",
+                "error": "#ba1a1a",
+                "on-background": "#1b1c1a",
+                "surface": "#fbf9f5",
+                "on-primary": "#ffffff",
+                "surface-bright": "#fbf9f5",
+                "on-primary-fixed": "#2b1613",
+                "on-primary-fixed-variant": "#5b403c",
+                "plantation-green": "#2D4F1E",
+                "surface-container-high": "#eae8e4",
+                "on-surface-variant": "#504442",
+                "on-secondary-fixed": "#2a1700",
+                "outline-variant": "#d3c3c0",
+                "primary-container": "#3e2723",
+                "on-secondary": "#ffffff",
+                "surface-container-highest": "#e4e2de",
+                "surface-container-low": "#f5f3ef",
+                "tertiary-container": "#133406",
+                "bean-shell": "#6D4C41",
+                "inverse-primary": "#e3beb8",
+                "on-tertiary": "#ffffff",
+                "on-error": "#ffffff",
+                "secondary-container": "#fdaa33",
+                "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "container-max": "1200px",
+                "margin-desktop": "32px",
+                "base": "8px",
+                "margin-mobile": "16px",
+                "gutter": "24px"
+            },
+            "fontFamily": {
+                "headline-lg": ["Playfair Display"],
+                "title-lg": ["Inter"],
+                "label-sm": ["Inter"],
+                "body-md": ["Inter"],
+                "display-lg": ["Playfair Display"],
+                "body-lg": ["Inter"],
+                "headline-md": ["Playfair Display"],
+                "headline-lg-mobile": ["Playfair Display"],
+                "label-md": ["Inter"]
+            },
+            "fontSize": {
+                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .form-input-focus:focus {
+            border-color: #D48806;
+            box-shadow: 0 0 0 1px #D48806;
+            outline: none;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+        }
+        .animate-subtle-slide {
+            animation: slideUp 0.6s ease-out forwards;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-paper-offwhite text-on-surface min-h-screen flex flex-col font-body-md text-body-md">
+<!-- TopNavBar (Simplified for focused journey) -->
+<nav class="bg-paper-offwhite flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-20">
+<div class="font-headline-md text-headline-md font-bold text-coffee-roast">Grão Alto</div>
+<a class="text-on-surface-variant hover:text-coffee-roast transition-colors duration-200 font-label-md text-label-md flex items-center gap-2" href="/">
+<span class="material-symbols-outlined">arrow_back</span>
+            Voltar para a loja
+        </a>
+</nav>
+<main class="flex-grow flex items-center justify-center py-12 px-4 relative overflow-hidden">
+<!-- Abstract Background Shape for Texture -->
+<div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] rounded-full bg-secondary-fixed/20 blur-3xl -z-10"></div>
+<div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] rounded-full bg-primary-fixed/30 blur-3xl -z-10"></div>
+<section class="w-full max-w-[1100px] grid md:grid-cols-2 gap-0 overflow-hidden rounded-xl shadow-md bg-white animate-subtle-slide">
+<!-- Branding/Image Side -->
+<div class="hidden md:block relative h-full min-h-[600px]">
+<div class="absolute inset-0 z-10 bg-gradient-to-t from-coffee-roast/60 to-transparent"></div>
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A premium, close-up photograph of a barista meticulously preparing a specialty coffee using a ceramic dripper. The lighting is soft and warm, highlighting the rich textures of the coffee grounds and the clean, minimalist aesthetic of the Pernambuco café. The atmosphere is calm and artisanal, reflecting the high-quality, grounded brand identity of Grão Alto." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAsKgGIj1yCJhK1AKH8sV4ntTRwe93gNW6jV_v9JAqjmCugPi4c8TYPKlswQEilzrqMJXXJ0fUH6ObMPkWTlIDQ8K7wJG2Vx-VvaWxLItd9o7MEhmUbxvs4jXG0sUMbN68QkcTT2nOO-hLl6zgtOKkiLbNCOK44UmGL8JgWYthAf1-dbBJTZnMW0XHNDT6jo5Z8uyE1Q0GU-rFAglX9zwOi4Nhk5qMoOAOhXoh7UFF3eAWs55VKt9IPNQ')"></div>
+<div class="absolute bottom-12 left-12 right-12 z-20 text-white">
+<h2 class="font-headline-lg text-headline-lg mb-4">Bem-vindo ao ritual do café.</h2>
+<p class="font-body-lg text-body-lg opacity-90 leading-relaxed">Junte-se à nossa comunidade de entusiastas e tenha acesso a seleções exclusivas dos melhores grãos de Pernambuco.</p>
+</div>
+</div>
+<!-- Form Side -->
+<div class="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+<header class="mb-10">
+<h1 class="font-headline-md text-headline-md text-coffee-roast mb-2">Crie sua conta</h1>
+<p class="text-on-surface-variant">Comece sua jornada sensorial conosco hoje mesmo.</p>
+</header>
+<form class="space-y-6" id="registrationForm" onsubmit="handleRegistration(event)">
+<!-- Nome Completo -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-coffee-roast" for="full_name">Nome Completo</label>
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md form-input-focus transition-all" id="full_name" placeholder="Ex: João Silva" required="" type="text"/>
+</div>
+<!-- E-mail -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-coffee-roast" for="email">E-mail</label>
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md form-input-focus transition-all" id="email" placeholder="seu@email.com" required="" type="email"/>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Senha -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-coffee-roast" for="password">Senha</label>
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md form-input-focus transition-all" id="password" minlength="8" placeholder="Mín. 8 caracteres" required="" type="password"/>
+</div>
+<!-- Telefone -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-coffee-roast" for="phone">Telefone</label>
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md form-input-focus transition-all" id="phone" placeholder="(81) 99999-9999" required="" type="tel"/>
+</div>
+</div>
+<!-- Info Alert -->
+<div class="bg-surface-container-low p-4 rounded-lg flex gap-3 items-start border-l-4 border-honey-amber">
+<span class="material-symbols-outlined text-honey-amber mt-0.5">info</span>
+<p class="font-label-md text-label-md text-on-surface-variant leading-tight">
+                            Enviaremos um link de confirmação para o seu e-mail após o cadastro. Por favor, verifique sua caixa de entrada.
+                        </p>
+</div>
+<div class="pt-2">
+<button class="w-full bg-coffee-roast text-paper-offwhite py-4 px-6 rounded-lg font-title-lg text-title-lg hover:bg-honey-amber transition-colors duration-300 flex justify-center items-center gap-2 active:scale-[0.98]" type="submit">
+                            Criar minha conta
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="text-center pt-4">
+<p class="text-on-surface-variant font-label-md text-label-md">
+                            Já possui uma conta? 
+                            <a class="text-coffee-roast font-bold hover:text-honey-amber transition-colors" href="#">Fazer Login</a>
+</p>
+</div>
+</form>
+</div>
+</section>
+</main>
+<!-- Success Modal (Hidden by default) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center px-4 hidden" id="successModal">
+<div class="absolute inset-0 bg-coffee-roast/40 backdrop-blur-sm"></div>
+<div class="bg-white p-8 md:p-12 rounded-xl shadow-2xl max-w-md w-full relative z-10 text-center animate-subtle-slide">
+<div class="w-20 h-20 bg-tertiary-fixed text-plantation-green rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'wght' 600">mail</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-coffee-roast mb-4">Verifique seu e-mail</h2>
+<p class="text-on-surface-variant mb-8 leading-relaxed">
+                Cadastro realizado com sucesso! Enviamos um link de ativação para o endereço informado. Verifique sua pasta de spam caso não encontre.
+            </p>
+<button class="w-full bg-coffee-roast text-white py-4 rounded-lg font-title-lg hover:bg-honey-amber transition-all" onclick="closeModal()">
+                Entendido
+            </button>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-primary dark:bg-surface-container-lowest mt-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter w-full px-margin-desktop py-16 max-w-container-max mx-auto text-on-primary">
+<div class="col-span-1 md:col-span-1">
+<div class="font-headline-md text-headline-md text-on-primary mb-4">Grão Alto</div>
+<p class="font-body-md text-body-md opacity-80">O melhor do café artesanal pernambucano diretamente para sua casa.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md mb-4 opacity-60 uppercase tracking-widest">Explore</h4>
+<ul class="space-y-2 font-body-md">
+<li><a class="hover:text-honey-amber transition-colors duration-200" href="#">Cafés</a></li>
+<li><a class="hover:text-honey-amber transition-colors duration-200" href="#">Acessórios</a></li>
+<li><a class="hover:text-honey-amber transition-colors duration-200" href="#">Assinaturas</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md mb-4 opacity-60 uppercase tracking-widest">Suporte</h4>
+<ul class="space-y-2 font-body-md">
+<li class="text-on-primary-fixed-variant">FAQ</li>
+<li class="text-on-primary-fixed-variant">Trocas e Devoluções</li>
+<li class="text-on-primary-fixed-variant">Privacidade</li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md mb-4 opacity-60 uppercase tracking-widest">Social</h4>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">language</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">share</span>
+</a>
+</div>
+</div>
+</div>
+<div class="border-t border-white/10 py-6 text-center">
+<p class="font-label-sm text-label-sm text-on-primary-fixed-variant opacity-70">© 2024 Grão Alto Cafés Especiais. Pernambuco, Brasil.</p>
+</div>
+</footer>
+<script>
+        function handleRegistration(event) {
+            event.preventDefault();
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalContent = submitBtn.innerHTML;
+            
+            // Subtle loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processando...
+            `;
+
+            // Simulate API call
+            setTimeout(() => {
+                document.getElementById('successModal').classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                event.target.reset();
+            }, 1500);
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // Phone mask (simple)
+        document.getElementById('phone').addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        });
+    </script>
+</body></html>

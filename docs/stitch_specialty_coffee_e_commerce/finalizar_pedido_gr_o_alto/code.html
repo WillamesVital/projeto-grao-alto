@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout Unificado | Grão Alto</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#ae8d87",
+                    "tertiary-fixed": "#c5efad",
+                    "on-tertiary-container": "#789f65",
+                    "tertiary": "#051d00",
+                    "paper-offwhite": "#FDFBF7",
+                    "secondary-fixed": "#ffddb8",
+                    "outline": "#827472",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "secondary": "#855300",
+                    "on-tertiary-fixed": "#062100",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#dbdad6",
+                    "primary-fixed": "#ffdad4",
+                    "primary-fixed-dim": "#e3beb8",
+                    "tertiary-fixed-dim": "#a9d293",
+                    "background": "#fbf9f5",
+                    "inverse-surface": "#30312e",
+                    "on-tertiary-fixed-variant": "#2d4f1e",
+                    "honey-amber": "#D48806",
+                    "on-secondary-container": "#6b4200",
+                    "surface-container": "#efeeea",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "surface-variant": "#e4e2de",
+                    "on-surface": "#1b1c1a",
+                    "coffee-roast": "#3E2723",
+                    "primary": "#271310",
+                    "inverse-on-surface": "#f2f0ed",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#745853",
+                    "error-red": "#B00020",
+                    "error": "#ba1a1a",
+                    "on-background": "#1b1c1a",
+                    "surface": "#fbf9f5",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fbf9f5",
+                    "on-primary-fixed": "#2b1613",
+                    "on-primary-fixed-variant": "#5b403c",
+                    "plantation-green": "#2D4F1E",
+                    "surface-container-high": "#eae8e4",
+                    "on-surface-variant": "#504442",
+                    "on-secondary-fixed": "#2a1700",
+                    "outline-variant": "#d3c3c0",
+                    "primary-container": "#3e2723",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#e4e2de",
+                    "surface-container-low": "#f5f3ef",
+                    "tertiary-container": "#133406",
+                    "bean-shell": "#6D4C41",
+                    "inverse-primary": "#e3beb8",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#fdaa33",
+                    "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1200px",
+                    "margin-desktop": "32px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Playfair Display"],
+                    "title-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Playfair Display"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Playfair Display"],
+                    "label-md": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .checkout-card {
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(39, 19, 16, 0.04);
+            border: 1px solid rgba(130, 116, 114, 0.1);
+            transition: box-shadow 0.2s ease;
+        }
+        .checkout-card:hover {
+            box-shadow: 0 4px 16px rgba(39, 19, 16, 0.08);
+        }
+        input:focus {
+            outline: none;
+            border-color: #D48806 !important;
+            box-shadow: 0 0 0 1px #D48806;
+        }
+        .step-number {
+            background-color: #3E2723;
+            color: #FDFBF7;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-paper-offwhite text-on-surface font-body-md antialiased">
+<!-- Top Navigation Anchor -->
+<header class="bg-paper-offwhite h-20 flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto z-40">
+<div class="font-headline-md text-headline-md font-bold text-coffee-roast">Grão Alto</div>
+<div class="flex items-center gap-6">
+<span class="text-on-surface-variant font-label-md flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 20px;">lock</span>
+                Checkout Seguro
+            </span>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Checkout Form Column -->
+<div class="lg:col-span-8 space-y-gutter">
+<!-- 1. Identificação -->
+<section class="checkout-card p-8 rounded-lg">
+<div class="flex items-center gap-4 mb-8">
+<div class="step-number">1</div>
+<h2 class="font-headline-md text-headline-md text-coffee-roast">Identificação</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">E-mail</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" placeholder="seu@email.com" type="email"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">CPF (Obrigatório)</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" placeholder="000.000.000-00" required="" type="text"/>
+</div>
+</div>
+</section>
+<!-- 2. Entrega -->
+<section class="checkout-card p-8 rounded-lg">
+<div class="flex items-center gap-4 mb-8">
+<div class="step-number">2</div>
+<h2 class="font-headline-md text-headline-md text-coffee-roast">Entrega</h2>
+</div>
+<div class="space-y-6">
+<div class="flex flex-col gap-2 max-w-xs">
+<label class="font-label-md text-on-surface-variant">CEP</label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant p-3 rounded-lg text-body-md pr-12" placeholder="50000-000" type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-coffee-roast hover:text-honey-amber transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">Rua / Logradouro</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" type="text"/>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="col-span-1 flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">Número</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" type="text"/>
+</div>
+<div class="col-span-2 flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">Bairro</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" type="text"/>
+</div>
+</div>
+</div>
+<div class="pt-4">
+<h3 class="font-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Opções de Frete</h3>
+<div class="space-y-3">
+<!-- Option 1 -->
+<label class="flex items-center justify-between p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-coffee-roast transition-all group has-[:checked]:border-coffee-roast has-[:checked]:bg-surface-container-low">
+<div class="flex items-center gap-3">
+<input checked="" class="w-4 h-4 text-coffee-roast focus:ring-honey-amber border-outline-variant" name="shipping" type="radio"/>
+<div class="flex flex-col">
+<span class="font-title-lg text-coffee-roast">Bairro A / Recife Antigo</span>
+<span class="text-label-sm text-on-surface-variant italic">Entrega em até 24h</span>
+</div>
+</div>
+<span class="font-bold text-plantation-green">R$ 8,00</span>
+</label>
+<!-- Option 2 -->
+<label class="flex items-center justify-between p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-coffee-roast transition-all group has-[:checked]:border-coffee-roast has-[:checked]:bg-surface-container-low">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 text-coffee-roast focus:ring-honey-amber border-outline-variant" name="shipping" type="radio"/>
+<div class="flex flex-col">
+<span class="font-title-lg text-coffee-roast">Bairro B / Boa Viagem</span>
+<span class="text-label-sm text-on-surface-variant italic">Entrega em até 48h</span>
+</div>
+</div>
+<span class="font-bold text-plantation-green">R$ 15,00</span>
+</label>
+<!-- Option 3 -->
+<label class="flex items-center justify-between p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-coffee-roast transition-all group has-[:checked]:border-coffee-roast has-[:checked]:bg-surface-container-low">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 text-coffee-roast focus:ring-honey-amber border-outline-variant" name="shipping" type="radio"/>
+<div class="flex flex-col">
+<span class="font-title-lg text-coffee-roast">Retirada na Roastery</span>
+<span class="text-label-sm text-on-surface-variant italic">Pronto em 1 hora</span>
+</div>
+</div>
+<span class="font-bold text-plantation-green">Grátis</span>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Pagamento -->
+<section class="checkout-card p-8 rounded-lg">
+<div class="flex items-center gap-4 mb-8">
+<div class="step-number">3</div>
+<h2 class="font-headline-md text-headline-md text-coffee-roast">Pagamento</h2>
+</div>
+<div class="flex gap-4 mb-8">
+<button class="flex-1 py-4 px-6 border-2 border-coffee-roast rounded-lg bg-coffee-roast text-on-primary flex items-center justify-center gap-2 transition-all" id="btn-card" onclick="togglePayment('card')">
+<span class="material-symbols-outlined">credit_card</span>
+                            Cartão de Crédito
+                        </button>
+<button class="flex-1 py-4 px-6 border-2 border-outline-variant rounded-lg text-on-surface-variant flex items-center justify-center gap-2 hover:border-coffee-roast transition-all" id="btn-pix" onclick="togglePayment('pix')">
+<span class="material-symbols-outlined">qr_code_2</span>
+                            Pix
+                        </button>
+</div>
+<!-- Payment Details: Card -->
+<div class="space-y-6" id="payment-card">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">Número do Cartão</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md w-full" placeholder="0000 0000 0000 0000" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">Nome no Cartão</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">Validade</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" placeholder="MM/AA" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-on-surface-variant">CVV</label>
+<input class="bg-white border border-outline-variant p-3 rounded-lg text-body-md" placeholder="123" type="text"/>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 pt-4">
+<label class="font-label-md text-on-surface-variant">Parcelamento</label>
+<select class="bg-white border border-outline-variant p-3 rounded-lg text-body-md cursor-pointer">
+<option>1x de R$ 138,00 (Sem juros)</option>
+<option>2x de R$ 69,00 (Sem juros)</option>
+<option>3x de R$ 46,00 (Sem juros)</option>
+</select>
+</div>
+</div>
+<!-- Payment Details: Pix (Hidden Initially) -->
+<div class="hidden flex flex-col items-center gap-6 py-4" id="payment-pix">
+<div class="p-6 bg-surface-container rounded-xl">
+<div class="w-48 h-48 bg-white border-4 border-white shadow-sm flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="A detailed, high-contrast QR code for PIX payment displayed on a clean white background. The QR code is surrounded by a minimalist border with the soft, warm tones of the coffee brand's palette. The overall style is professional, modern, and trustworthy, with high-key lighting that makes the code easy to scan." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2rQqCnODCzm7roIf9YwtPxqvxLmMKQ5B-PsFDe32QhJ2dmNHNf2-ppE7IAIe38d1D0ds_VxmKDdYheH-onLNfsRzf7J2kS_xgmsl1K0WGNJJzB4djj2i1QCnjLtjeWFirHCPfDaJmf2x5BGmW7H2SN9VXP3ZJa-jfcG686jaij4x9rxnAr6uTDuxa6OWAWj_DUyxkFo7H3W_dxOB-TVBZbTGHaLvQwIxyEqqNyUh-o-aggMW0Gd4x3Q"/>
+</div>
+</div>
+<p class="text-center text-on-surface-variant text-body-md max-w-xs">
+                            Escaneie o código acima no app do seu banco ou copie a chave Pix abaixo.
+                        </p>
+<button class="flex items-center gap-2 text-coffee-roast font-bold py-2 px-4 hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined">content_copy</span>
+                            Copiar Chave Aleatória
+                        </button>
+</div>
+</section>
+</div>
+<!-- Sticky Order Summary Column -->
+<aside class="lg:col-span-4 lg:sticky lg:top-8 space-y-gutter">
+<div class="checkout-card rounded-lg overflow-hidden">
+<div class="bg-surface-container-high p-6 border-b border-outline-variant">
+<h3 class="font-headline-md text-headline-md text-coffee-roast">Resumo do Pedido</h3>
+</div>
+<div class="p-6 space-y-6">
+<!-- Items -->
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-surface-container rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A macro shot of a bag of specialty coffee beans labeled 'Grão Alto Catuaí Vermelho'. The bag is textured kraft paper with dark brown typography, resting on a rustic wooden surface with a few scattered coffee beans. Soft morning sunlight filters from the side, creating a warm, artisanal boutique atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3HEzh-9V3nKF1w4hOI4JHevMy1ZdKK2rlUpVjnVBDvItnwRFHmn5V_CNJWUFOO9FrRtVcX4CcmATttwJf843mqSjlvaB2zdjk7ry0Uzy31qkNsBmjcclzcQMJeM4Wis73QqntRBV2ULLbvyYdx0c0jeEAlYenQVUHv_fuOZBO8FJHDRnzzhdB35ZdzToJS0fifK4j3NlQmbifuFUmBPz2xAAFrXX5ZcnwF4xxkwlZX8bJ_80WpspZGQ"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<h4 class="font-title-lg text-coffee-roast leading-tight">Catuaí Vermelho - 250g</h4>
+<span class="text-label-sm text-on-surface-variant">Notas: Caramelo e Avelã</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-label-md">Qtd: 2</span>
+<span class="font-bold">R$ 96,00</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-surface-container rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A sleek, minimalist V60 ceramic dripper in a matte cream finish. It sits elegantly on a minimalist white countertop with a soft grey backdrop. The lighting is bright and clean, emphasizing the smooth textures and modern design of the specialty coffee accessory." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvsTNNxXGg2xwJfErwyEimgmFA5OvZtlsdm34HbBo0lS4-tiiV3oRzXzo36Gsv16-EvhhlRM3_3ejNyMNNLeAuqr-2qmxiSn8Djmugch40mvXPRcumWvLfnUT2UTk6FdOAOnc9DPQrQlUVubiE9fRkV0iW2-BQcjD553Ziddk2YqPIAg7uLXtLM6U5vBKzIIPBAs8HE-Hpei0mIZPIM0OeFOMngRnB2GZuO6elPcO6QT5lcKmiCN82ow"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<h4 class="font-title-lg text-coffee-roast leading-tight">Dripper V60 Cerâmica</h4>
+<span class="text-label-sm text-on-surface-variant">Cor: Creme</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-label-md">Qtd: 1</span>
+<span class="font-bold">R$ 42,00</span>
+</div>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant opacity-20"/>
+<!-- Totals -->
+<div class="space-y-2">
+<div class="flex justify-between text-on-surface-variant">
+<span>Subtotal</span>
+<span>R$ 138,00</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span>Frete</span>
+<span class="text-plantation-green">R$ 8,00</span>
+</div>
+<div class="flex justify-between pt-4 border-t border-outline-variant mt-4">
+<span class="font-bold text-headline-md text-coffee-roast">Total</span>
+<span class="font-bold text-headline-md text-coffee-roast">R$ 146,00</span>
+</div>
+</div>
+<!-- CTA -->
+<button class="w-full bg-coffee-roast text-on-primary py-5 rounded-lg font-bold text-title-lg flex items-center justify-center gap-2 hover:bg-honey-amber transition-all active:scale-[0.98]">
+                            Finalizar Pedido
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<p class="text-center text-label-sm text-on-surface-variant italic">
+                            * Pagamento processado de forma segura via SSL.
+                        </p>
+</div>
+</div>
+<!-- Assistance Card -->
+<div class="bg-surface-container-low p-6 rounded-lg border border-outline-variant">
+<h4 class="font-label-md text-coffee-roast mb-2">Precisa de ajuda?</h4>
+<div class="flex items-center gap-3 text-on-surface-variant hover:text-coffee-roast cursor-pointer">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md">Falar com especialista pelo WhatsApp</span>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer Anchor -->
+<footer class="bg-primary mt-20">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter w-full px-margin-desktop py-16 max-w-container-max mx-auto text-on-primary">
+<div class="md:col-span-2">
+<div class="font-headline-md text-headline-md mb-4">Grão Alto</div>
+<p class="text-on-primary-fixed-variant max-w-sm mb-6">
+                    Levando a alma dos cafezais de Pernambuco diretamente para a sua xícara. Especialidade em cada detalhe.
+                </p>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-bold uppercase text-label-sm tracking-widest opacity-60">Ajuda</span>
+<a class="text-on-primary-fixed-variant hover:text-honey-amber transition-colors" href="#">FAQ</a>
+<a class="text-on-primary-fixed-variant hover:text-honey-amber transition-colors" href="#">Trocas e Devoluções</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-bold uppercase text-label-sm tracking-widest opacity-60">Legal</span>
+<a class="text-on-primary-fixed-variant hover:text-honey-amber transition-colors" href="#">Privacidade</a>
+<a class="text-on-primary-fixed-variant hover:text-honey-amber transition-colors" href="#">Termos de Uso</a>
+</div>
+</div>
+<div class="border-t border-white/10 py-8 px-margin-desktop text-center text-label-sm text-on-primary-fixed-variant">
+            © 2024 Grão Alto Cafés Especiais. Pernambuco, Brasil.
+        </div>
+</footer>
+<script>
+        function togglePayment(method) {
+            const btnCard = document.getElementById('btn-card');
+            const btnPix = document.getElementById('btn-pix');
+            const sectionCard = document.getElementById('payment-card');
+            const sectionPix = document.getElementById('payment-pix');
+
+            if (method === 'card') {
+                btnCard.classList.remove('border-outline-variant', 'text-on-surface-variant');
+                btnCard.classList.add('border-coffee-roast', 'bg-coffee-roast', 'text-on-primary');
+                
+                btnPix.classList.remove('border-coffee-roast', 'bg-coffee-roast', 'text-on-primary');
+                btnPix.classList.add('border-outline-variant', 'text-on-surface-variant');
+                
+                sectionCard.classList.remove('hidden');
+                sectionPix.classList.add('hidden');
+            } else {
+                btnPix.classList.remove('border-outline-variant', 'text-on-surface-variant');
+                btnPix.classList.add('border-coffee-roast', 'bg-coffee-roast', 'text-on-primary');
+                
+                btnCard.classList.remove('border-coffee-roast', 'bg-coffee-roast', 'text-on-primary');
+                btnCard.classList.add('border-outline-variant', 'text-on-surface-variant');
+                
+                sectionPix.classList.remove('hidden');
+                sectionCard.classList.add('hidden');
+            }
+        }
+    </script>
+</body></html>

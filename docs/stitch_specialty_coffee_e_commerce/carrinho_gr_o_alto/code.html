@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grão Alto - Carrinho de Compras</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#ae8d87",
+                    "tertiary-fixed": "#c5efad",
+                    "on-tertiary-container": "#789f65",
+                    "tertiary": "#051d00",
+                    "paper-offwhite": "#FDFBF7",
+                    "secondary-fixed": "#ffddb8",
+                    "outline": "#827472",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "secondary": "#855300",
+                    "on-tertiary-fixed": "#062100",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#dbdad6",
+                    "primary-fixed": "#ffdad4",
+                    "primary-fixed-dim": "#e3beb8",
+                    "tertiary-fixed-dim": "#a9d293",
+                    "background": "#fbf9f5",
+                    "inverse-surface": "#30312e",
+                    "on-tertiary-fixed-variant": "#2d4f1e",
+                    "honey-amber": "#D48806",
+                    "on-secondary-container": "#6b4200",
+                    "surface-container": "#efeeea",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "surface-variant": "#e4e2de",
+                    "on-surface": "#1b1c1a",
+                    "coffee-roast": "#3E2723",
+                    "primary": "#271310",
+                    "inverse-on-surface": "#f2f0ed",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#745853",
+                    "error-red": "#B00020",
+                    "error": "#ba1a1a",
+                    "on-background": "#1b1c1a",
+                    "surface": "#fbf9f5",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fbf9f5",
+                    "on-primary-fixed": "#2b1613",
+                    "on-primary-fixed-variant": "#5b403c",
+                    "plantation-green": "#2D4F1E",
+                    "surface-container-high": "#eae8e4",
+                    "on-surface-variant": "#504442",
+                    "on-secondary-fixed": "#2a1700",
+                    "outline-variant": "#d3c3c0",
+                    "primary-container": "#3e2723",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#e4e2de",
+                    "surface-container-low": "#f5f3ef",
+                    "tertiary-container": "#133406",
+                    "bean-shell": "#6D4C41",
+                    "inverse-primary": "#e3beb8",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#fdaa33",
+                    "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1200px",
+                    "margin-desktop": "32px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Playfair Display"],
+                    "title-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Playfair Display"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Playfair Display"],
+                    "headline-lg-mobile": ["Playfair Display"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .item-row:hover .delete-btn { opacity: 1; }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .transition-soft { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-paper-offwhite font-body-md text-on-surface">
+<!-- TopNavBar -->
+<nav class="bg-paper-offwhite dark:bg-surface-container docked full-width top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-20">
+<div class="font-headline-md text-headline-md font-bold text-coffee-roast dark:text-primary-fixed">Grão Alto</div>
+<div class="hidden md:flex gap-8">
+<a class="text-on-surface-variant dark:text-on-surface hover:text-coffee-roast font-label-md text-label-md transition-colors duration-200" href="#">Cafés</a>
+<a class="text-on-surface-variant dark:text-on-surface hover:text-coffee-roast font-label-md text-label-md transition-colors duration-200" href="#">Acessórios</a>
+<a class="text-on-surface-variant dark:text-on-surface hover:text-coffee-roast font-label-md text-label-md transition-colors duration-200" href="#">Sobre</a>
+</div>
+<div class="flex items-center gap-6 text-coffee-roast dark:text-primary-fixed">
+<button class="hover:text-honey-amber transition-colors duration-200 flex items-center">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="hover:text-honey-amber transition-colors duration-200 flex items-center relative">
+<span class="material-symbols-outlined">shopping_basket</span>
+<span class="absolute -top-2 -right-2 bg-honey-amber text-on-primary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+<header class="mb-12">
+<h1 class="font-headline-lg text-headline-lg md:text-display-lg text-coffee-roast">Seu Carrinho</h1>
+<p class="text-on-surface-variant mt-2 font-body-md">Você selecionou cafés artesanais de alta qualidade.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Items List -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Item 1 -->
+<div class="item-row bg-white rounded-lg p-4 md:p-6 flex flex-col md:flex-row gap-6 shadow-[0_12px_24px_-10px_rgba(39,19,16,0.04)] border border-outline-variant/10 transition-soft">
+<div class="w-full md:w-32 h-32 flex-shrink-0 bg-surface-container rounded overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up professional studio photography of a premium bag of specialty coffee beans with a minimalist label. The setting is warm and artisanal with scattered roasted beans on a light wood surface. The lighting is soft and golden, highlighting the texture of the craft paper packaging." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBArMXrBcByHDlWXohwMfFiSs5xqg38Y4px7adj6d7b0XR6ZEAQXN2krbtYkEJe0oJYGmNFeTvkqv0-U8UbrBeGjmctAMeP3xh_hWYhdsXB0aFxX0RgVA98hMBwxelTqg5q4JGciMlfyZRCeOKedrQOal-zL5IVDXebmPW2JsEBwqm0FhAlRj89gjEa_5SaYVgTN_nNeBexW7j7g6yg3KVcHPQn2Euy_D6blN8DJfVsKie_-RYCvcSQLw"/>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-coffee-roast mb-1">Reserva do Agreste</h3>
+<p class="text-label-md text-honey-amber font-medium">Notas: Chocolate, Caramelo, Frutas Vermelhas</p>
+<p class="text-body-md text-on-surface-variant mt-2">Moagem: <span class="font-semibold text-on-surface">Fina (Espresso)</span></p>
+</div>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center border border-outline-variant rounded-full p-1 h-10">
+<button class="w-8 h-8 flex items-center justify-center text-coffee-roast hover:bg-surface-container-low rounded-full transition-colors" onclick="updateQty(this, -1)">-</button>
+<input class="w-10 text-center border-none focus:ring-0 bg-transparent font-bold text-coffee-roast" max="10" min="1" readonly="" type="number" value="1"/>
+<button class="w-8 h-8 flex items-center justify-center text-coffee-roast hover:bg-surface-container-low rounded-full transition-colors" onclick="updateQty(this, 1)">+</button>
+</div>
+<div class="text-right">
+<p class="text-label-sm text-on-surface-variant line-through">R$ 54,90</p>
+<p class="font-headline-md text-headline-md text-coffee-roast" data-base-price="49.90">R$ 49,90</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="item-row bg-white rounded-lg p-4 md:p-6 flex flex-col md:flex-row gap-6 shadow-[0_12px_24px_-10px_rgba(39,19,16,0.04)] border border-outline-variant/10 transition-soft">
+<div class="w-full md:w-32 h-32 flex-shrink-0 bg-surface-container rounded overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Elegant close up of a coffee accessories kit including a high-end metal dripper and a bag of premium roasted coffee. The aesthetic is clean and modern, set in a light-filled minimalist kitchen. Muted earth tones and high-key lighting emphasize quality and ritual." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ2CfIkxa9vUvSsbEFsFBBw0_IB8hnnmVC2dhPtu0hweHXDt7GlpBINytiYUvNZW5ZgWWKHR7ohrmrXSgXmsI1HWd_-oBf9zn_HMdXamnzLGDqiWlOQAwpb7BXnJ-uZe6ICh6cvPSwB47YX9tfcE_Lhftcst30C2FpdMvfhpuIW1pOHX475vm04VAmwa90Pe7_zzkIRbc7OKZY4a8aicqoEiw89Tgglwt0GO7hpnEb0iX4KryfK00nUA"/>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-coffee-roast mb-1">Mogiana Paulista</h3>
+<p class="text-label-md text-honey-amber font-medium">Notas: Amêndoas, Mel de Engenho</p>
+<p class="text-body-md text-on-surface-variant mt-2">Moagem: <span class="font-semibold text-on-surface">Em Grãos</span></p>
+</div>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center border border-outline-variant rounded-full p-1 h-10">
+<button class="w-8 h-8 flex items-center justify-center text-coffee-roast hover:bg-surface-container-low rounded-full transition-colors" onclick="updateQty(this, -1)">-</button>
+<input class="w-10 text-center border-none focus:ring-0 bg-transparent font-bold text-coffee-roast" max="10" min="1" readonly="" type="number" value="2"/>
+<button class="w-8 h-8 flex items-center justify-center text-coffee-roast hover:bg-surface-container-low rounded-full transition-colors" onclick="updateQty(this, 1)">+</button>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-coffee-roast" data-base-price="42.00">R$ 84,00</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary -->
+<aside class="lg:col-span-4 sticky top-24">
+<div class="bg-white rounded-lg p-6 md:p-8 shadow-[0_20px_40px_-15px_rgba(39,19,16,0.06)] border border-outline-variant/10">
+<h2 class="font-headline-md text-headline-md text-coffee-roast mb-6">Resumo</h2>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between text-on-surface-variant">
+<span>Subtotal</span>
+<span class="font-medium text-on-surface" id="cart-subtotal">R$ 133,90</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span>Frete</span>
+<span class="text-plantation-green font-medium">Grátis</span>
+</div>
+<div class="pt-4 border-t border-outline-variant/20">
+<label class="block text-label-sm uppercase tracking-wider text-on-surface-variant mb-2">Cupom de Desconto</label>
+<div class="flex gap-2">
+<input class="flex-grow bg-paper-offwhite border-outline-variant focus:border-honey-amber focus:ring-1 focus:ring-honey-amber rounded text-sm uppercase px-4 h-11 transition-soft" placeholder="CÓDIGO" type="text"/>
+<button class="bg-coffee-roast text-on-primary px-6 h-11 rounded font-label-md hover:bg-honey-amber transition-soft">Aplicar</button>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-end mb-8">
+<div>
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Total a pagar</p>
+<p class="font-headline-lg text-headline-lg text-coffee-roast" id="cart-total">R$ 133,90</p>
+</div>
+</div>
+<button class="w-full bg-coffee-roast text-on-primary py-4 rounded font-title-lg hover:bg-honey-amber active:scale-95 transition-all duration-150 flex items-center justify-center gap-2">
+                        Finalizar Compra
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<div class="mt-6 flex items-center justify-center gap-2 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                        Pagamento 100% Seguro
+                    </div>
+</div>
+<div class="mt-6 p-4 bg-surface-container-low rounded-lg flex items-start gap-4">
+<span class="material-symbols-outlined text-honey-amber">local_shipping</span>
+<div>
+<p class="font-label-md text-coffee-roast">Entrega Expressa</p>
+<p class="text-label-sm text-on-surface-variant">Receba em Recife em até 24h.</p>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-primary dark:bg-surface-container-lowest mt-24">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter w-full px-margin-desktop py-16 max-w-container-max mx-auto">
+<div class="md:col-span-1">
+<div class="font-headline-md text-headline-md text-on-primary mb-6">Grão Alto</div>
+<p class="text-on-primary-fixed-variant dark:text-on-surface-variant font-body-md">Semeando tradição e colhendo o melhor do café pernambucano diretamente para sua mesa.</p>
+</div>
+<div class="md:col-span-1">
+<h4 class="font-label-md text-on-primary mb-6 uppercase tracking-widest">Links Úteis</h4>
+<ul class="space-y-3">
+<li><a class="text-on-primary-fixed-variant dark:text-on-surface-variant hover:text-honey-amber transition-colors" href="#">FAQ</a></li>
+<li><a class="text-on-primary-fixed-variant dark:text-on-surface-variant hover:text-honey-amber transition-colors" href="#">Trocas e Devoluções</a></li>
+<li><a class="text-on-primary-fixed-variant dark:text-on-surface-variant hover:text-honey-amber transition-colors" href="#">Privacidade</a></li>
+</ul>
+</div>
+<div class="md:col-span-1">
+<h4 class="font-label-md text-on-primary mb-6 uppercase tracking-widest">Newsletter</h4>
+<p class="text-on-primary-fixed-variant dark:text-on-surface-variant mb-4 font-body-md">Receba dicas de preparo e novidades.</p>
+<div class="flex border-b border-on-primary-fixed-variant/30 pb-2">
+<input class="bg-transparent border-none focus:ring-0 text-on-primary placeholder:text-on-primary-fixed-variant w-full" placeholder="Seu e-mail" type="email"/>
+<button class="text-on-primary hover:text-honey-amber"><span class="material-symbols-outlined">send</span></button>
+</div>
+</div>
+<div class="md:col-span-1">
+<h4 class="font-label-md text-on-primary mb-6 uppercase tracking-widest">Contato</h4>
+<p class="text-on-primary-fixed-variant dark:text-on-surface-variant font-body-md">contato@graoalto.com.br</p>
+<p class="text-on-primary-fixed-variant dark:text-on-surface-variant font-body-md mt-2">Recife, Pernambuco</p>
+</div>
+</div>
+<div class="w-full px-margin-desktop py-8 border-t border-on-primary-fixed-variant/10 max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-on-primary-fixed-variant dark:text-on-surface-variant font-label-sm">© 2024 Grão Alto Cafés Especiais. Pernambuco, Brasil.</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-on-primary-fixed-variant">credit_card</span>
+<span class="material-symbols-outlined text-on-primary-fixed-variant">account_balance_wallet</span>
+<span class="material-symbols-outlined text-on-primary-fixed-variant">payments</span>
+</div>
+</div>
+</footer>
+<script>
+        function updateQty(btn, change) {
+            const container = btn.parentElement;
+            const input = container.querySelector('input');
+            const row = btn.closest('.item-row');
+            const priceEl = row.querySelector('[data-base-price]');
+            const basePrice = parseFloat(priceEl.dataset.basePrice);
+            
+            let currentVal = parseInt(input.value);
+            let newVal = currentVal + change;
+            
+            if (newVal >= 1 && newVal <= 10) {
+                input.value = newVal;
+                
+                // Update item price
+                const newItemPrice = (basePrice * newVal).toFixed(2);
+                priceEl.innerText = `R$ ${newItemPrice.replace('.', ',')}`;
+                
+                calculateTotals();
+            }
+        }
+
+        function calculateTotals() {
+            let subtotal = 0;
+            document.querySelectorAll('[data-base-price]').forEach(el => {
+                const qty = parseInt(el.closest('.item-row').querySelector('input').value);
+                subtotal += parseFloat(el.dataset.basePrice) * qty;
+            });
+
+            const formatted = subtotal.toFixed(2).replace('.', ',');
+            document.getElementById('cart-subtotal').innerText = `R$ ${formatted}`;
+            document.getElementById('cart-total').innerText = `R$ ${formatted}`;
+        }
+
+        // Initialize micro-interactions
+        document.querySelectorAll('.item-row').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.classList.add('shadow-xl', '-translate-y-1');
+            });
+            row.addEventListener('mouseleave', () => {
+                row.classList.remove('shadow-xl', '-translate-y-1');
+            });
+        });
+    </script>
+</body></html>

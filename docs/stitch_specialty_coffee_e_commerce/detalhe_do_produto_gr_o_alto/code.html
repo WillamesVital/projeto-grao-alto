@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grão Alto | Café Especial Reserva do Sertão</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#ae8d87",
+                        "tertiary-fixed": "#c5efad",
+                        "on-tertiary-container": "#789f65",
+                        "tertiary": "#051d00",
+                        "paper-offwhite": "#FDFBF7",
+                        "secondary-fixed": "#ffddb8",
+                        "outline": "#827472",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "secondary": "#855300",
+                        "on-tertiary-fixed": "#062100",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dbdad6",
+                        "primary-fixed": "#ffdad4",
+                        "primary-fixed-dim": "#e3beb8",
+                        "tertiary-fixed-dim": "#a9d293",
+                        "background": "#fbf9f5",
+                        "inverse-surface": "#30312e",
+                        "on-tertiary-fixed-variant": "#2d4f1e",
+                        "honey-amber": "#D48806",
+                        "on-secondary-container": "#6b4200",
+                        "surface-container": "#efeeea",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "surface-variant": "#e4e2de",
+                        "on-surface": "#1b1c1a",
+                        "coffee-roast": "#3E2723",
+                        "primary": "#271310",
+                        "inverse-on-surface": "#f2f0ed",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#745853",
+                        "error-red": "#B00020",
+                        "error": "#ba1a1a",
+                        "on-background": "#1b1c1a",
+                        "surface": "#fbf9f5",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#fbf9f5",
+                        "on-primary-fixed": "#2b1613",
+                        "on-primary-fixed-variant": "#5b403c",
+                        "plantation-green": "#2D4F1E",
+                        "surface-container-high": "#eae8e4",
+                        "on-surface-variant": "#504442",
+                        "on-secondary-fixed": "#2a1700",
+                        "outline-variant": "#d3c3c0",
+                        "primary-container": "#3e2723",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e4e2de",
+                        "surface-container-low": "#f5f3ef",
+                        "tertiary-container": "#133406",
+                        "bean-shell": "#6D4C41",
+                        "inverse-primary": "#e3beb8",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#fdaa33",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "margin-desktop": "32px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Playfair Display"],
+                        "title-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .gallery-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .gallery-scrollbar::-webkit-scrollbar-thumb {
+            background: #827472;
+            border-radius: 4px;
+        }
+        .custom-shadow {
+            box-shadow: 0 12px 24px -10px rgba(62, 39, 35, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-paper-offwhite text-on-surface font-body-md antialiased">
+<!-- TopNavBar -->
+<header class="bg-paper-offwhite dark:bg-surface-container docked full-width top-0 z-50">
+<nav class="flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-20">
+<div class="flex items-center gap-12">
+<a class="font-headline-md text-headline-md font-bold text-coffee-roast dark:text-primary-fixed" href="#">Grão Alto</a>
+<ul class="hidden md:flex items-center gap-8">
+<li><a class="text-coffee-roast font-bold border-b-2 border-coffee-roast pb-1 font-label-md" href="#">Cafés</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface hover:text-coffee-roast transition-colors duration-200 font-label-md" href="#">Acessórios</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface hover:text-coffee-roast transition-colors duration-200 font-label-md" href="#">Sobre</a></li>
+</ul>
+</div>
+<div class="flex items-center gap-6">
+<button class="hover:text-honey-amber transition-colors duration-200 active:scale-95 flex items-center">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="hover:text-honey-amber transition-colors duration-200 active:scale-95 flex items-center relative">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+<span class="absolute -top-1 -right-1 bg-honey-amber text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+</button>
+<button class="md:hidden flex items-center" onclick="toggleSideNav()">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Gallery Section -->
+<div class="lg:col-span-7 space-y-6">
+<div class="aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low custom-shadow relative">
+<img class="w-full h-full object-cover transition-opacity duration-300" data-alt="A high-end studio product photograph of a premium coffee bag sitting on a textured wooden surface. The bag is craft paper brown with a minimalist black and gold label from Grão Alto. Soft, warm natural sunlight streams from the side, creating a cozy and welcoming atmosphere in a minimalist light-mode aesthetic. The background is a clean, slightly off-white plaster wall with subtle organic shadows." id="mainImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA02Wy-HGC5vQLCU4kXDqTEk2ReOAxBTaLhAN-iglO9TsTLsFbJQkTTWoMdvmjrwwrbXX2fwdf_rww4YXkqfgoMCrrjQouNjsMcPryNYzYQHnQzTn-B4eBzsE7jaP1L5TcFIRFXcVHRssEgSbghBNgDrfPPvM2LvdVvT1d8zHsnZB7CXdaz9vRQcRvhIYAJ1tPj5aL2cO44m-xL5K_LbcupMpDa-H50a2XjwqVvtbKQzd83IxjAoZZILA"/>
+<div class="absolute top-4 left-4">
+<span class="bg-honey-amber text-white px-3 py-1 text-label-sm rounded-lg shadow-sm">SCA 88 pts</span>
+</div>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-2 gallery-scrollbar">
+<button class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 border-coffee-roast bg-surface-container" onclick="updateImage(0)">
+<img class="w-full h-full object-cover" data-alt="A macro shot of roasted coffee beans in a wooden scoop, showing rich oily textures and deep brown colors. The lighting is soft and golden, highlighting the artisanal quality of the roast. The aesthetic is clean and premium, following a warm minimalist palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8pne6uYns1jraDmV-akv_55_doF3JtKNAkPnRZ7Ll38-jVDJp-IvmRWqjwolrOfjeyJUrN6XuoZTIB-8oMp04j_rUmtapMfWPqwP4_8Olg7iDyEo5jMRqAX8Pj7-7TQ8Eb5F7-jZrAVU3H-IquijUvPsNKGMDQcpgL7maukYe5zamFHgkMlcvqLdjQeMOL1UfJ16nlEr3ZhOxu3kQlrk5rTT7Ku6udWrK2_fSiS4EsMmA923MavHR_Q"/>
+</button>
+<button class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 border-transparent hover:border-outline-variant bg-surface-container" onclick="updateImage(1)">
+<img class="w-full h-full object-cover" data-alt="A lifestyle shot of a ceramic mug filled with dark coffee, showing a delicate crema on top. The mug is placed on a minimalist table next to the Grão Alto coffee bag. The scene is bright and airy with soft shadows, conveying a premium morning ritual." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaeLrEgaV1-iKedilkqtfm5wRB7vbf8IkDxLYKCJEdyHl9eptcDJEkOoGjrKOAbiU8M29AHPJ1vo5sBH4euTSrqlgKZcGcWWv-pBXjUjkKG7E5nl0igWeEIw68wwwj3dFNHp2ufLpSDJQrr2rdO1atDaUoTCTnIxy6Zsrpx93FFhW7KcJQUfKxzTIPxSUdBwpnuK107vVeWsEu_zpy0SdSQTOdK6qkJ6t7wlDbAcZX0lDJSDQM4s0DJA"/>
+</button>
+<button class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 border-transparent hover:border-outline-variant bg-surface-container" onclick="updateImage(2)">
+<img class="w-full h-full object-cover" data-alt="A scenic photograph of a high-altitude coffee plantation in Pernambuco, Brazil, during the golden hour. Lush green coffee trees stretch across rolling hills under a soft, hazy sky. The lighting is warm and evocative of the brand's earthy heritage." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCct4hDcbhOwlzUwGrluy56CwM_ktpynT4eVJm2E0LEnIpGtq4TO6ZVD0pVrVN4mEgNq4A7FuS9S4r8Q9cmC2TsB7XeVQnRYiGuNQVToH-cOyi7T7lr6IzPlpkqCy_hxC7OwMqrHgf6oapGpvesT9u1NnUAOml0RL0Ub8XWPmXao7hV01ZquZTh3dD76H4kOkXLfg0Gh2ZdAUzaceQjB7Fh2vwUjD2_SDf1vfG6CA1odJws70wA2HRRtQ"/>
+</button>
+</div>
+</div>
+<!-- Product Info Section -->
+<div class="lg:col-span-5 flex flex-col">
+<nav class="flex items-center gap-2 text-on-surface-variant font-label-sm mb-4">
+<a class="hover:text-coffee-roast" href="#">Cafés</a>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-coffee-roast font-bold">Reserva do Sertão</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-coffee-roast mb-2">Reserva do Sertão</h1>
+<p class="text-honey-amber font-title-lg mb-6">R$ <span id="displayPrice">48,90</span></p>
+<p class="text-on-surface-variant font-body-md mb-8 leading-relaxed">
+                    Um café de corpo aveludado e notas sensoriais de melaço de cana e castanha. Colhido manualmente nas terras altas de Pernambuco, este lote representa a excelência da produção nordestina.
+                </p>
+<!-- Selectors -->
+<div class="space-y-8 mb-10">
+<!-- Peso -->
+<div>
+<label class="block font-label-md text-coffee-roast mb-3">Selecione o Peso</label>
+<div class="flex flex-wrap gap-3" id="weightSelector">
+<button class="px-6 py-3 rounded-lg border-2 border-coffee-roast bg-coffee-roast text-white font-label-md transition-all" onclick="selectWeight(this, 48.90)">250g</button>
+<button class="px-6 py-3 rounded-lg border-2 border-outline-variant text-on-surface-variant font-label-md hover:border-coffee-roast transition-all" onclick="selectWeight(this, 89.90)">500g</button>
+<button class="px-6 py-3 rounded-lg border-2 border-outline-variant text-on-surface-variant font-label-md hover:border-coffee-roast transition-all" onclick="selectWeight(this, 164.90)">1kg</button>
+</div>
+</div>
+<!-- Moagem -->
+<div>
+<label class="block font-label-md text-coffee-roast mb-3">Tipo de Moagem</label>
+<div class="grid grid-cols-2 gap-3" id="grindSelector">
+<button class="px-4 py-3 rounded-lg border-2 border-coffee-roast bg-coffee-roast text-white font-label-md flex items-center justify-center gap-2 transition-all" onclick="selectGrind(this)">
+<span class="material-symbols-outlined text-[20px]">grain</span> Grão Inteiro
+                            </button>
+<button class="px-4 py-3 rounded-lg border-2 border-outline-variant text-on-surface-variant font-label-md flex items-center justify-center gap-2 hover:border-coffee-roast transition-all" onclick="selectGrind(this)">
+<span class="material-symbols-outlined text-[20px]">coffee_maker</span> Espresso
+                            </button>
+<button class="px-4 py-3 rounded-lg border-2 border-outline-variant text-on-surface-variant font-label-md flex items-center justify-center gap-2 hover:border-coffee-roast transition-all" onclick="selectGrind(this)">
+<span class="material-symbols-outlined text-[20px]">filter_alt</span> Coado
+                            </button>
+<button class="px-4 py-3 rounded-lg border-2 border-outline-variant text-on-surface-variant font-label-md flex items-center justify-center gap-2 hover:border-coffee-roast transition-all" onclick="selectGrind(this)">
+<span class="material-symbols-outlined text-[20px]">oven_gen</span> Prensa
+                            </button>
+</div>
+</div>
+</div>
+<!-- CTA -->
+<div class="mt-auto flex flex-col sm:flex-row gap-4">
+<button class="flex-1 bg-coffee-roast text-white py-5 rounded-lg font-label-md font-bold flex items-center justify-center gap-3 hover:bg-primary transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">shopping_cart</span>
+                        ADICIONAR AO CARRINHO
+                    </button>
+<button class="w-16 h-16 rounded-lg border-2 border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-error-red hover:border-error-red transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<!-- Trust Badges -->
+<div class="mt-8 flex items-center gap-6 py-6 border-t border-outline-variant/20">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-plantation-green">local_shipping</span>
+<span class="text-label-sm">Frete grátis (R$200+)</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-plantation-green">verified</span>
+<span class="text-label-sm">Certificado Orgânico</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Rich Description -->
+<section class="mt-24">
+<div class="border-b border-outline-variant/30 flex gap-8 mb-12 overflow-x-auto no-scrollbar">
+<button class="pb-4 text-coffee-roast font-bold border-b-2 border-coffee-roast font-label-md whitespace-nowrap">DESCRIÇÃO RICA</button>
+<button class="pb-4 text-on-surface-variant font-label-md whitespace-nowrap hover:text-coffee-roast transition-colors">PROCESSO E ORIGEM</button>
+<button class="pb-4 text-on-surface-variant font-label-md whitespace-nowrap hover:text-coffee-roast transition-colors">AVALIAÇÕES (48)</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+<div class="space-y-6">
+<h2 class="font-headline-md text-headline-md text-coffee-roast">A Alma do Sertão em Cada Xícara</h2>
+<p class="text-on-surface-variant leading-relaxed">
+                        Nosso Reserva do Sertão é fruto de uma colaboração estreita com pequenos produtores da Serra da Borborema. Cultivado a 1.100 metros de altitude, este grão 100% Arábica se beneficia das noites frias e do solo rico em minerais da região.
+                    </p>
+<div class="grid grid-cols-2 gap-6">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<h4 class="font-label-md text-coffee-roast mb-1">Processo</h4>
+<p class="text-on-surface-variant text-sm">Natural e Cereja Descascado</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<h4 class="font-label-md text-coffee-roast mb-1">Variedade</h4>
+<p class="text-on-surface-variant text-sm">Catuaí Vermelho 144</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<h4 class="font-label-md text-coffee-roast mb-1">Altitude</h4>
+<p class="text-on-surface-variant text-sm">1.100m - 1.250m</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<h4 class="font-label-md text-coffee-roast mb-1">Região</h4>
+<p class="text-on-surface-variant text-sm">Triunfo, Pernambuco</p>
+</div>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden aspect-video shadow-xl">
+<img class="w-full h-full object-cover" data-alt="A cinematic close-up of a barista's hands performing a manual pour-over brew. Clear glass dripper sits atop a server. The stream of water is precise, and the coffee grounds are blooming with rich bubbles. The kitchen background is out of focus, minimalist, and bright with warm wood accents and light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8YGnRj_xTheDC9zqTrHfSoi-ASHUGsaEtOnKWLHDqHMPJWQy0juhBcqflZaV5JbFQDfziuDTLsmzC6d0aa5VR2gJl8jVmvplE_f4KqAj2-f5e7c3BH28y4N3wShgX7jjEtn8dkdpm9E80QfnbKlk-qWPKi8Mpq7NH5_BpiC3GFPciNrs16BTpgrEAF_cL86I6lbesrimmDrAi0VHzSjwYhnwfnqQnUXSnC7OXmgc74y1oocp2WiHjSQ"/>
+</div>
+</div>
+</section>
+</main>
+<!-- SideNavBar (Cart/Profile Sidebar) -->
+<aside class="fixed right-0 top-0 h-full z-[60] flex flex-col p-6 bg-surface dark:bg-surface-container-high docked right-0 h-full w-80 shadow-md translate-x-full transition-transform duration-300" id="sideNav">
+<div class="flex justify-between items-center mb-10">
+<h3 class="font-headline-md text-headline-md text-coffee-roast">Sua Sacola</h3>
+<button class="text-on-surface-variant hover:text-coffee-roast" onclick="toggleSideNav()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-6 overflow-y-auto mb-8">
+<!-- Cart Item Placeholder -->
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Small thumbnail of a coffee bag from Grão Alto, showing minimalist packaging design on a clean light background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIWuysR5pf_GJrS6rZcAm3ScMwvsnvEMBOBLR7Kl9bQPC-qNgFMkRckSszxvAcZMx-FEIl-MulQhX3fbY6-WKAvlcqqYEDhR4qyjJlcTybZ1u6s6ePMXbKHgkB_jEs6xmHRYVWm85wOq_GzUIuYpy3TYvszgBsovp1ihBs6zXSDDxmEQAIWC61O1H8qg_RMjm-DkVqMfgT_gH716ArGtNgHFD969VGcoi5RUKLLgzhX5vCKdU_COW8vg"/>
+</div>
+<div>
+<h4 class="font-label-md text-coffee-roast">Blend Recife</h4>
+<p class="text-on-surface-variant text-xs mb-2">250g • Grão</p>
+<p class="font-bold text-sm">R$ 42,90</p>
+</div>
+</div>
+</div>
+<div class="mt-auto border-t border-outline-variant/30 pt-6">
+<div class="flex justify-between mb-6">
+<span class="font-label-md text-on-surface-variant">Total</span>
+<span class="font-headline-md text-coffee-roast">R$ 42,90</span>
+</div>
+<button class="w-full bg-honey-amber text-white py-4 rounded-full font-label-md font-bold hover:bg-secondary-container transition-all active:scale-[0.98]">
+                FINALIZAR PEDIDO
+            </button>
+</div>
+</aside>
+<div class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" id="overlay" onclick="toggleSideNav()"></div>
+<!-- Footer -->
+<footer class="bg-primary dark:bg-surface-container-lowest full-width bottom mt-20">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter w-full px-margin-desktop py-16 max-w-container-max mx-auto text-on-primary">
+<div class="md:col-span-1 space-y-4">
+<h2 class="font-headline-md text-headline-md text-on-primary">Grão Alto</h2>
+<p class="font-body-md opacity-80">Levando a alma da produção cafeeira de Pernambuco para o seu ritual diário.</p>
+</div>
+<div class="space-y-4">
+<h4 class="font-label-md font-bold">Explorar</h4>
+<ul class="space-y-2 opacity-80 text-on-primary-fixed-variant">
+<li><a class="hover:text-honey-amber transition-colors" href="#">Cafés de Origem</a></li>
+<li><a class="hover:text-honey-amber transition-colors" href="#">Métodos de Preparo</a></li>
+<li><a class="hover:text-honey-amber transition-colors" href="#">Clube de Assinatura</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-label-md font-bold">Suporte</h4>
+<ul class="space-y-2 opacity-80 text-on-primary-fixed-variant">
+<li><a class="hover:text-honey-amber transition-colors" href="#">FAQ</a></li>
+<li><a class="hover:text-honey-amber transition-colors" href="#">Trocas e Devoluções</a></li>
+<li><a class="hover:text-honey-amber transition-colors" href="#">Privacidade</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-label-md font-bold">Newsletter</h4>
+<div class="flex gap-2">
+<input class="bg-white/10 border border-white/20 rounded-lg px-4 py-2 w-full text-sm focus:outline-none focus:border-honey-amber" placeholder="Seu e-mail" type="email"/>
+<button class="bg-honey-amber px-4 py-2 rounded-lg font-label-md">Ok</button>
+</div>
+<p class="text-[10px] opacity-60">© 2024 Grão Alto Cafés Especiais. Pernambuco, Brasil.</p>
+</div>
+</div>
+</footer>
+<script>
+        function selectWeight(btn, price) {
+            const container = document.getElementById('weightSelector');
+            container.querySelectorAll('button').forEach(b => {
+                b.classList.remove('bg-coffee-roast', 'text-white', 'border-coffee-roast');
+                b.classList.add('border-outline-variant', 'text-on-surface-variant');
+            });
+            btn.classList.remove('border-outline-variant', 'text-on-surface-variant');
+            btn.classList.add('bg-coffee-roast', 'text-white', 'border-coffee-roast');
+            
+            document.getElementById('displayPrice').innerText = price.toFixed(2).replace('.', ',');
+        }
+
+        function selectGrind(btn) {
+            const container = document.getElementById('grindSelector');
+            container.querySelectorAll('button').forEach(b => {
+                b.classList.remove('bg-coffee-roast', 'text-white', 'border-coffee-roast');
+                b.classList.add('border-outline-variant', 'text-on-surface-variant');
+            });
+            btn.classList.remove('border-outline-variant', 'text-on-surface-variant');
+            btn.classList.add('bg-coffee-roast', 'text-white', 'border-coffee-roast');
+        }
+
+        function updateImage(idx) {
+            const mainImg = document.getElementById('mainImage');
+            mainImg.style.opacity = '0';
+            setTimeout(() => {
+                // In a real app, you would swap actual source URLs
+                mainImg.style.opacity = '1';
+            }, 200);
+        }
+
+        function toggleSideNav() {
+            const nav = document.getElementById('sideNav');
+            const overlay = document.getElementById('overlay');
+            if(nav.classList.contains('translate-x-full')) {
+                nav.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                nav.classList.add('translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+    </script>
+</body></html>
