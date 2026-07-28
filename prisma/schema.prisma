@@ -1,0 +1,281 @@
+// Grão Alto — schema do MVP (ver docs/escopo-mvp-grao-alto.md)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum Grind {
+  GRAOS
+  ESPRESSO
+  COADO
+  PRENSA
+}
+
+enum DeliveryMethod {
+  DELIVERY
+  PICKUP
+}
+
+enum ShippingZoneCode {
+  A
+  B
+  C
+  FORA_DA_AREA
+}
+
+enum PaymentMethod {
+  PIX
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  DECLINED
+  EXPIRED
+}
+
+enum OrderStatus {
+  AGUARDANDO_PAGAMENTO
+  EM_PREPARO
+  PRONTO
+  A_CAMINHO
+  ENTREGUE
+  CANCELADO
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  name                String
+  email               String    @unique
+  passwordHash        String
+  phone               String
+  cpf                 String?
+  role                Role      @default(CUSTOMER)
+  emailVerifiedAt     DateTime?
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  tokenVersion        Int       @default(0)
+  fromWhatsappInvite  Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  carts                  Cart[]
+  orders                 Order[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+
+  @@index([email])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Product {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  name          String
+  region        String
+  sensoryNotes  String
+  process       String
+  variety       String?
+  altitude      String?
+  scaScore      Int
+  description   String
+  storyTitle    String?
+  storyBody     String?
+  imageUrl      String
+  galleryUrls   String
+  lastRoastDate DateTime
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  variants  ProductVariant[]
+  cartItems CartItem[]
+  orderItems OrderItem[]
+
+  @@index([active])
+}
+
+model ProductVariant {
+  id         String  @id @default(cuid())
+  productId  String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  weightGrams Int
+  grind      Grind
+  sku        String  @unique
+  priceCents Int
+  stockQty   Int     @default(0)
+  active     Boolean @default(true)
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([productId, weightGrams, grind])
+}
+
+model ShippingZone {
+  id               String           @id @default(cuid())
+  neighborhood     String           @unique
+  zone             ShippingZoneCode
+  priceCents       Int
+  freeThresholdCents Int?
+  routeDays        String
+  active           Boolean          @default(true)
+}
+
+model Coupon {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  percentOff     Int?
+  fixedOffCents  Int?
+  minOrderCents  Int       @default(0)
+  active         Boolean   @default(true)
+  expiresAt      DateTime?
+  usageLimit     Int?
+  timesUsed      Int       @default(0)
+
+  orders Order[]
+}
+
+model Cart {
+  id               String    @id @default(cuid())
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guestToken       String?   @unique
+  expiresAt        DateTime
+  checkoutLockedAt DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  items CartItem[]
+
+  @@index([userId])
+  @@index([guestToken])
+}
+
+model CartItem {
+  id               String         @id @default(cuid())
+  cartId           String
+  cart             Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product        @relation(fields: [productId], references: [id])
+  productVariantId String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  quantity         Int
+  unitPriceCents   Int
+  outOfStockFlag   Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([cartId, productVariantId])
+}
+
+model Order {
+  id             String  @id @default(cuid())
+  orderNumber    String  @unique
+  idempotencyKey String  @unique
+  userId         String
+  user           User    @relation(fields: [userId], references: [id])
+
+  email String
+  cpf   String
+
+  deliveryMethod  DeliveryMethod
+  addressCep      String?
+  addressStreet   String?
+  addressNumber   String?
+  addressComplement String?
+  addressNeighborhood String?
+  addressCity     String?
+  addressState    String?
+
+  shippingZoneCode  ShippingZoneCode?
+  shippingLabel     String
+  shippingCents     Int
+
+  subtotalCents Int
+  discountCents Int @default(0)
+  totalCents    Int
+
+  couponId   String?
+  coupon     Coupon? @relation(fields: [couponId], references: [id])
+
+  paymentMethod PaymentMethod
+  status        OrderStatus   @default(AGUARDANDO_PAGAMENTO)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  paidAt    DateTime?
+
+  items    OrderItem[]
+  payments Payment[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id                String          @id @default(cuid())
+  orderId           String
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product         @relation(fields: [productId], references: [id])
+  productVariantId  String
+  productVariant    ProductVariant  @relation(fields: [productVariantId], references: [id])
+  productNameSnapshot String
+  weightGrams       Int
+  grind             Grind
+  unitPriceCents    Int
+  quantity          Int
+  totalCents        Int
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  orderId               String
+  order                 Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method                PaymentMethod
+  status                PaymentStatus @default(PENDING)
+  pixCode               String?
+  pixExpiresAt          DateTime?
+  cardLast4             String?
+  installments          Int?
+  gatewayTransactionId  String?       @unique
+  declineReason         String?
+  createdAt             DateTime      @default(now())
+  confirmedAt           DateTime?
+}
