@@ -4,8 +4,10 @@ import path from "path";
 export default defineConfig({
   test: {
     environment: "node",
+    globalSetup: ["./tests/global-setup.ts"],
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.test.ts"],
+    fileParallelism: false,
   },
   resolve: {
     alias: {
