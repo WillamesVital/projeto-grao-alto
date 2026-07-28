@@ -3,16 +3,19 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { getOrCreateCartForMutation, cartTotals, cartWeightGrams, lockCartForCheckout } from "@/lib/cart";
 import {
-  findShippingZoneByNeighborhood,
-  resolveOwnFleetShipping,
-  resolveCorreiosShipping,
-  resolvePickupShipping,
-  listShippingZones,
-} from "@/lib/shipping";
-import { applyCoupon, createOrderIdempotent, createPaymentAttempt } from "@/lib/orders";
+  getOrCreateCartForMutation,
+  cartTotals,
+  cartWeightGrams,
+  lockCartForCheckout,
+  ensureCheckoutIdempotencyKey,
+  clearCheckoutIdempotencyKey,
+} from "@/lib/cart";
+import { findShippingZoneByNeighborhood, listShippingZones } from "@/lib/shipping";
+import { createOrderIdempotent, createPaymentAttempt } from "@/lib/orders";
 import { confirmOrderPayment } from "@/lib/orders";
+import { computeOrderPricing } from "@/lib/pricing";
+import { isCheckoutEnabledForZone, checkoutFlagSnapshot } from "@/lib/feature-flags";
 import { generatePixCharge, authorizeCardCharge } from "@/lib/payment-gateway";
 import { checkoutSchema } from "@/lib/validation";
 import { lookupCep, type CepAddress } from "@/lib/cep";
@@ -26,23 +29,78 @@ export async function listShippingZonesAction() {
   return listShippingZones();
 }
 
-export async function quoteShippingPreviewAction(params: {
+/**
+ * Marca o pedido como `EXPIRADO` quando o Pix vence sem pagamento (RN-407.5).
+ * Sem um job de fundo neste projeto, a transição acontece "de forma
+ * preguiçosa": no primeiro carregamento da tela de espera após o vencimento.
+ * Um webhook que chegue depois disso ainda reativa o pedido normalmente
+ * (RN-407.7) — `confirmOrderPayment` trata `EXPIRADO` como reativável.
+ */
+export async function markOrderExpiredIfNeededAction(orderNumber: string) {
+  const order = await prisma.order.findUnique({
+    where: { orderNumber },
+    include: { payments: { orderBy: { createdAt: "desc" } } },
+  });
+  if (!order || order.status !== "AGUARDANDO_PAGAMENTO") return;
+
+  const pendingPix = order.payments.find((p) => p.method === "PIX" && p.status === "PENDING");
+  if (pendingPix?.pixExpiresAt && pendingPix.pixExpiresAt.getTime() < Date.now()) {
+    await prisma.order.update({ where: { id: order.id }, data: { status: "EXPIRADO" } });
+  }
+}
+
+/** Gera um novo Pix para um pedido já criado cujo código anterior expirou (GA-407 CA-2). */
+export async function generateNewPixAction(orderNumber: string) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const order = await prisma.order.findUnique({ where: { orderNumber } });
+  if (!order || order.userId !== user.id) redirect("/pedidos");
+  if (order.paymentMethod !== "PIX" || (order.status !== "EXPIRADO" && order.status !== "AGUARDANDO_PAGAMENTO")) {
+    redirect(`/pedidos/${orderNumber}`);
+  }
+
+  const payment = await createPaymentAttempt(order.id, "PIX");
+  const charge = await generatePixCharge(order.orderNumber, order.totalCents);
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        pixCode: charge.pixCode,
+        pixExpiresAt: charge.expiresAt,
+        gatewayTransactionId: charge.gatewayTransactionId,
+      },
+    }),
+    prisma.order.update({ where: { id: order.id }, data: { status: "AGUARDANDO_PAGAMENTO" } }),
+  ]);
+
+  redirect(`/checkout/pix/${order.orderNumber}`);
+}
+
+/**
+ * Prévia de preço exibida na tela (carrinho e checkout) — usa exatamente a
+ * mesma função (`computeOrderPricing`) que decide a cobrança de verdade em
+ * `placeOrderAction`, para que a tela nunca mostre um valor diferente do que
+ * é cobrado (RN-401.7).
+ */
+export async function previewOrderPricingAction(params: {
   deliveryMethod: "DELIVERY" | "PICKUP";
   neighborhood: string;
   subtotalCents: number;
   totalWeightGrams: number;
+  couponCode?: string;
 }) {
-  if (params.deliveryMethod === "PICKUP") {
-    return resolvePickupShipping();
-  }
-  const zone = await findShippingZoneByNeighborhood(params.neighborhood);
-  if (!zone) return resolveCorreiosShipping(params.totalWeightGrams);
-  return resolveOwnFleetShipping(zone, params.subtotalCents);
-}
-
-export async function previewCouponAction(code: string, subtotalCents: number) {
-  if (!code.trim()) return { ok: false as const, error: "Informe um cupom." };
-  return applyCoupon(code, subtotalCents);
+  const user = await getCurrentUser();
+  const zone =
+    params.deliveryMethod === "PICKUP" ? null : await findShippingZoneByNeighborhood(params.neighborhood);
+  return computeOrderPricing({
+    subtotalCents: params.subtotalCents,
+    couponCode: params.couponCode,
+    userId: user?.id,
+    deliveryMethod: params.deliveryMethod,
+    zone,
+    totalWeightGrams: params.totalWeightGrams,
+  });
 }
 
 export async function ensureCheckoutLockAction() {
@@ -53,6 +111,7 @@ export async function ensureCheckoutLockAction() {
   if (!isFrozen) {
     await lockCartForCheckout(cart.id);
   }
+  return ensureCheckoutIdempotencyKey(cart.id);
 }
 
 export async function placeOrderAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -105,17 +164,25 @@ export async function placeOrderAction(_prev: FormState, formData: FormData): Pr
 
   const subtotalCents = cartTotals(cart);
 
-  const shippingOption =
-    data.deliveryMethod === "PICKUP"
-      ? resolvePickupShipping()
-      : (await findShippingZoneByNeighborhood(data.neighborhood!))
-        ? resolveOwnFleetShipping((await findShippingZoneByNeighborhood(data.neighborhood!))!, subtotalCents)
-        : resolveCorreiosShipping(cartWeightGrams(cart));
+  const zone =
+    data.deliveryMethod === "PICKUP" ? null : await findShippingZoneByNeighborhood(data.neighborhood!);
 
-  let couponCode: string | undefined;
-  if (data.couponCode?.trim()) {
-    const result = await applyCoupon(data.couponCode, subtotalCents);
-    couponCode = result.ok ? data.couponCode : undefined;
+  const pricing = await computeOrderPricing({
+    subtotalCents,
+    couponCode: data.couponCode?.trim() || undefined,
+    userId: user.id,
+    deliveryMethod: data.deliveryMethod,
+    zone,
+    totalWeightGrams: cartWeightGrams(cart),
+  });
+
+  // GA-409: checkout pode estar desligado para a faixa do cliente durante um
+  // rollout gradual — ele é orientado a fechar pelo WhatsApp, sem quebrar a navegação.
+  if (!isCheckoutEnabledForZone(pricing.shipping.zoneCode)) {
+    return {
+      ok: false,
+      message: "Ainda não atendemos seu bairro pelo site. Fale com a gente pelo WhatsApp para fechar seu pedido.",
+    };
   }
 
   const order = await createOrderIdempotent({
@@ -136,11 +203,13 @@ export async function placeOrderAction(_prev: FormState, formData: FormData): Pr
             state: data.state ?? "",
           }
         : undefined,
-    shippingZoneCode: shippingOption.zoneCode,
-    shippingLabel: shippingOption.label,
-    shippingCents: shippingOption.priceCents,
-    couponCode,
+    shippingZoneCode: pricing.shipping.zoneCode,
+    shippingLabel: pricing.shipping.label,
+    shippingCents: pricing.shipping.priceCents,
+    discountCents: pricing.discountCents,
+    couponId: pricing.couponId,
     paymentMethod: data.paymentMethod,
+    checkoutFlagSnapshot: checkoutFlagSnapshot(),
     items: cart.items.map((i) => ({
       productId: i.productId,
       productVariantId: i.productVariantId,
@@ -153,6 +222,23 @@ export async function placeOrderAction(_prev: FormState, formData: FormData): Pr
   });
 
   await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+  await clearCheckoutIdempotencyKey(cart.id);
+
+  // RN-408.9/RN-407.6: um retry (duplo clique, rede lenta) reenvia a mesma
+  // idempotencyKey e cai aqui com um `order` já existente — se já existe uma
+  // tentativa de pagamento reaproveitável para ele, seguimos direto para a
+  // tela correspondente em vez de gerar um segundo Pix ou uma segunda
+  // autorização de cartão.
+  const existingPixPending = order.payments.find(
+    (p) => p.method === "PIX" && p.status === "PENDING" && p.pixExpiresAt && p.pixExpiresAt.getTime() > Date.now(),
+  );
+  if (existingPixPending) {
+    redirect(`/checkout/pix/${order.orderNumber}`);
+  }
+  const existingCaptured = order.payments.find((p) => p.status === "CAPTURED");
+  if (existingCaptured) {
+    redirect(`/pedido-confirmado/${order.orderNumber}`);
+  }
 
   if (data.paymentMethod === "PIX") {
     const payment = await createPaymentAttempt(order.id, "PIX");

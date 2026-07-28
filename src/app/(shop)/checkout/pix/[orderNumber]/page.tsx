@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { formatBRL } from "@/lib/format";
 import PixPaymentPanel from "@/components/pix-payment-panel";
+import { markOrderExpiredIfNeededAction, generateNewPixAction } from "@/actions/checkout";
 
 export default async function PixWaitingPage({
   params,
@@ -14,23 +15,23 @@ export default async function PixWaitingPage({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
+  await markOrderExpiredIfNeededAction(orderNumber);
+
   const order = await prisma.order.findUnique({
     where: { orderNumber },
     include: { payments: { orderBy: { createdAt: "desc" } } },
   });
   if (!order || order.userId !== user.id) notFound();
 
-  if (order.status !== "AGUARDANDO_PAGAMENTO") {
+  if (order.status !== "AGUARDANDO_PAGAMENTO" && order.status !== "EXPIRADO") {
     redirect(`/pedido-confirmado/${order.orderNumber}`);
   }
 
-  const payment = order.payments.find((p) => p.method === "PIX" && p.status === "PENDING");
+  const payment = order.payments.find((p) => p.method === "PIX");
   if (!payment || !payment.pixCode || !payment.gatewayTransactionId) notFound();
 
   const qrDataUrl = await QRCode.toDataURL(payment.pixCode, { margin: 1, width: 320 });
-  // eslint-disable-next-line react-hooks/purity -- Server Component: avaliado uma vez por request no servidor, não durante um render de cliente.
-  const now = Date.now();
-  const expired = !!payment.pixExpiresAt && payment.pixExpiresAt.getTime() < now;
+  const expired = order.status === "EXPIRADO";
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16 text-center">
@@ -40,9 +41,19 @@ export default async function PixWaitingPage({
       </p>
 
       {expired ? (
-        <p className="rounded-lg bg-error-container px-4 py-3 text-label-md text-on-error-container">
-          Este código Pix expirou. Volte ao carrinho e finalize a compra novamente.
-        </p>
+        <div className="flex flex-col items-center gap-4">
+          <p className="rounded-lg bg-error-container px-4 py-3 text-label-md text-on-error-container">
+            O prazo do Pix acabou. Seu carrinho e os dados do pedido continuam salvos.
+          </p>
+          <form action={generateNewPixAction.bind(null, order.orderNumber)}>
+            <button
+              type="submit"
+              className="rounded-lg bg-coffee-roast px-6 py-3 font-bold text-white hover:bg-honey-amber"
+            >
+              Gerar novo Pix
+            </button>
+          </form>
+        </div>
       ) : (
         <>
           <div className="mx-auto mb-6 w-fit rounded-xl bg-surface-container p-6">

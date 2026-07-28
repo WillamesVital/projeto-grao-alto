@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getCart, cartTotals } from "@/lib/cart";
-import { formatBRL } from "@/lib/format";
 import CartItemRow from "@/components/cart-item-row";
+import CartSummary from "@/components/cart-summary";
 
 export default async function CartPage() {
   const cart = await getCart();
@@ -41,48 +41,14 @@ export default async function CartPage() {
                 grind={item.productVariant.grind}
                 quantity={item.quantity}
                 unitPriceCents={item.unitPriceCents}
+                currentPriceCents={item.productVariant.priceCents}
                 outOfStockFlag={item.outOfStockFlag}
               />
             ))}
           </div>
 
           <aside className="sticky top-24 lg:col-span-4">
-            <div className="rounded-lg border border-outline-variant/10 bg-white p-6 shadow-[0_20px_40px_-15px_rgba(39,19,16,0.06)] md:p-8">
-              <h2 className="font-display mb-6 text-headline-md text-coffee-roast">Resumo</h2>
-              <div className="mb-8 space-y-4">
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>Subtotal</span>
-                  <span className="font-medium text-on-surface">{formatBRL(subtotalCents)}</span>
-                </div>
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>Frete</span>
-                  <span className="text-label-sm">calculado no checkout</span>
-                </div>
-              </div>
-
-              {hasOutOfStock && (
-                <p className="mb-4 rounded-lg bg-error-container px-4 py-3 text-label-sm text-on-error-container">
-                  Remova os itens esgotados para continuar.
-                </p>
-              )}
-
-              <Link
-                href={hasOutOfStock ? "#" : "/checkout"}
-                aria-disabled={hasOutOfStock}
-                className={`flex w-full items-center justify-center gap-2 rounded py-4 text-title-lg transition-all active:scale-95 ${
-                  hasOutOfStock
-                    ? "pointer-events-none cursor-not-allowed bg-surface-variant text-on-surface-variant"
-                    : "bg-coffee-roast text-on-primary hover:bg-honey-amber"
-                }`}
-              >
-                Finalizar Compra
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </Link>
-              <div className="mt-6 flex items-center justify-center gap-2 text-label-sm text-on-surface-variant">
-                <span className="material-symbols-outlined text-[18px]">verified_user</span>
-                Pagamento simulado (curso) — nenhuma cobrança real
-              </div>
-            </div>
+            <CartSummary subtotalCents={subtotalCents} hasOutOfStock={hasOutOfStock} />
           </aside>
         </div>
       )}

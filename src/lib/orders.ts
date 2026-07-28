@@ -31,8 +31,14 @@ export type CreateOrderInput = {
   shippingZoneCode: ShippingZoneCode | null;
   shippingLabel: string;
   shippingCents: number;
-  couponCode?: string;
+  /** Desconto e cupom já resolvidos por `computeOrderPricing` — este módulo
+   * nunca recalcula cupom por conta própria, para não haver duas
+   * implementações divergentes da mesma conta (raiz histórica do bug
+   * RN-403.6). */
+  discountCents: number;
+  couponId: string | null;
   paymentMethod: PaymentMethod;
+  checkoutFlagSnapshot?: string;
   items: OrderItemInput[];
 };
 
@@ -41,11 +47,31 @@ function generateOrderNumber() {
   return `GA-${suffix}`;
 }
 
+/** Pedidos em que o cupom é considerado "usado" (RN-403.9: contabiliza só no
+ * pedido pago, nunca na aplicação) — inclui `EM_CONFERENCIA` porque o
+ * dinheiro já foi recebido, mesmo pendente de conferência manual. */
+export const PAID_ORDER_STATUSES = [
+  "PAGO",
+  "EM_CONFERENCIA",
+  "EM_PREPARO",
+  "PRONTO",
+  "A_CAMINHO",
+  "ENTREGUE",
+] as const;
+
 export type ApplyCouponResult =
   | { ok: true; coupon: Prisma.CouponGetPayload<Record<string, never>>; discountCents: number }
   | { ok: false; error: string };
 
-export async function applyCoupon(code: string, subtotalCents: number): Promise<ApplyCouponResult> {
+/**
+ * Valida e calcula o desconto de um cupom (RN-403). Não grava nada — o uso
+ * só é contabilizado quando o pagamento é confirmado (`confirmOrderPayment`).
+ */
+export async function applyCoupon(
+  code: string,
+  subtotalCents: number,
+  userId?: string,
+): Promise<ApplyCouponResult> {
   const coupon = await prisma.coupon.findUnique({ where: { code: code.trim().toUpperCase() } });
   if (!coupon || !coupon.active) return { ok: false, error: "Cupom inválido." };
   if (coupon.expiresAt && coupon.expiresAt.getTime() < Date.now()) {
@@ -59,6 +85,13 @@ export async function applyCoupon(code: string, subtotalCents: number): Promise<
       ok: false,
       error: `Pedido mínimo de ${formatBRL(coupon.minOrderCents)} para usar este cupom.`,
     };
+  }
+  if (userId) {
+    const alreadyUsed = await prisma.order.findFirst({
+      where: { userId, couponId: coupon.id, status: { in: [...PAID_ORDER_STATUSES] } },
+      select: { id: true },
+    });
+    if (alreadyUsed) return { ok: false, error: "Você já usou esse cupom." };
   }
 
   const rawDiscount = coupon.percentOff
@@ -82,16 +115,8 @@ export async function createOrderIdempotent(input: CreateOrderInput) {
   if (existing) return existing;
 
   const subtotalCents = input.items.reduce((sum, i) => sum + i.unitPriceCents * i.quantity, 0);
-
-  let discountCents = 0;
-  let couponId: string | null = null;
-  if (input.couponCode) {
-    const result = await applyCoupon(input.couponCode, subtotalCents);
-    if (result.ok) {
-      discountCents = result.discountCents;
-      couponId = result.coupon.id;
-    }
-  }
+  const discountCents = input.discountCents;
+  const couponId = input.couponId;
 
   const totalCents = subtotalCents - discountCents + input.shippingCents;
 
@@ -120,6 +145,7 @@ export async function createOrderIdempotent(input: CreateOrderInput) {
           totalCents,
           couponId,
           paymentMethod: input.paymentMethod,
+          checkoutFlagSnapshot: input.checkoutFlagSnapshot,
           items: {
             create: input.items.map((i) => ({
               productId: i.productId,
@@ -135,10 +161,6 @@ export async function createOrderIdempotent(input: CreateOrderInput) {
         },
         include: { items: true, payments: true },
       });
-
-      if (couponId) {
-        await prisma.coupon.update({ where: { id: couponId }, data: { timesUsed: { increment: 1 } } });
-      }
 
       return order;
     } catch (err) {
@@ -172,10 +194,23 @@ export type ConfirmPaymentResult =
   | { ok: true; order: Awaited<ReturnType<typeof createOrderIdempotent>> }
   | { ok: false; reason: string };
 
+/** Pedido já assentado: webhook duplicado/atrasado não repete efeito colateral algum. */
+const ALREADY_SETTLED_STATUSES = new Set<string>([...PAID_ORDER_STATUSES]);
+/** Pedido "morto" que pode ser reativado se o dinheiro efetivamente chegou (RN-407.7). */
+const REACTIVATABLE_STATUSES = new Set<string>(["EXPIRADO", "CANCELADO"]);
+
 /**
  * Confirma o pagamento e só então debita o estoque, de forma transacional e
  * condicional (nunca deixa o estoque ficar negativo mesmo sob concorrência —
  * o "último item" não é vendido duas vezes).
+ *
+ * Idempotente por natureza (RN-407.6): um pedido já assentado é devolvido sem
+ * repetir nenhum efeito colateral (sem debitar estoque de novo, sem reenviar
+ * e-mail). E, diferente do caminho fácil de simplesmente cancelar, um pedido
+ * que já expirou ou foi cancelado NUNCA é ignorado quando o pagamento chega
+ * depois (RN-407.7): dinheiro recebido sempre reativa o pedido como pago — e,
+ * se o estoque já não existir mais, vai para conferência manual da Bia,
+ * nunca para cancelamento automático de um pagamento que de fato aconteceu.
  */
 export async function confirmOrderPayment(
   orderId: string,
@@ -186,8 +221,20 @@ export async function confirmOrderPayment(
     include: { items: true, user: true },
   });
 
-  if (order.status !== "AGUARDANDO_PAGAMENTO") {
-    return { ok: true, order: await prisma.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true, payments: true } }) };
+  if (ALREADY_SETTLED_STATUSES.has(order.status)) {
+    return {
+      ok: true,
+      order: await prisma.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true, payments: true } }),
+    };
+  }
+
+  const isReactivation = REACTIVATABLE_STATUSES.has(order.status);
+  if (isReactivation) {
+    console.warn("[orders] pagamento efetivado após expiração/cancelamento — reativando pedido", {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      previousStatus: order.status,
+    });
   }
 
   try {
@@ -204,18 +251,46 @@ export async function confirmOrderPayment(
 
       await tx.order.update({
         where: { id: orderId },
-        data: { status: "EM_PREPARO", paidAt: new Date() },
+        data: { status: "PAGO", paidAt: new Date() },
       });
 
       await tx.payment.update({
         where: { id: paymentId },
         data: { status: "CAPTURED", confirmedAt: new Date() },
       });
+
+      if (order.couponId) {
+        await tx.coupon.update({ where: { id: order.couponId }, data: { timesUsed: { increment: 1 } } });
+      }
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     if (message.startsWith("STOCK_UNAVAILABLE:")) {
       const productName = message.split(":")[1];
+
+      if (isReactivation) {
+        await prisma.$transaction(async (tx) => {
+          await tx.payment.update({
+            where: { id: paymentId },
+            data: {
+              status: "CAPTURED",
+              confirmedAt: new Date(),
+              reviewNote: `Pagamento recebido após ${order.status === "EXPIRADO" ? "expiração" : "cancelamento"}, mas "${productName}" está sem estoque. Confirme manualmente com o cliente.`,
+            },
+          });
+          await tx.order.update({ where: { id: orderId }, data: { status: "EM_CONFERENCIA" } });
+        });
+        console.warn("[orders] pedido reativado sem estoque disponível — conferência manual necessária", {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          productName,
+        });
+        return {
+          ok: true,
+          order: await prisma.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true, payments: true } }),
+        };
+      }
+
       await prisma.payment.update({
         where: { id: paymentId },
         data: {

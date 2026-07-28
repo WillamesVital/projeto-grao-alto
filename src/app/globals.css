@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 :root {
+  /* O design system só define um tema (claro/"paper-offwhite") — força esse
+   * tema sempre, independente da preferência de SO/navegador do visitante,
+   * para não renderizar uma mistura quebrada com controles nativos escuros. */
+  color-scheme: light;
   --color-surface: #fbf9f5;
   --color-surface-dim: #dbdad6;
   --color-surface-bright: #fbf9f5;
@@ -181,22 +185,6 @@
   --spacing-margin-desktop: 32px;
 
   --container-max: 1200px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #14100e;
-    --color-on-background: #f2f0ed;
-    --color-surface: #14100e;
-    --color-surface-container-lowest: #0f0c0a;
-    --color-surface-container-low: #1c1714;
-    --color-surface-container: #221c19;
-    --color-surface-container-high: #2c2521;
-    --color-surface-container-highest: #372e29;
-    --color-on-surface: #f2f0ed;
-    --color-on-surface-variant: #d3c3c0;
-    --color-paper-offwhite: #14100e;
-  }
 }
 
 body {

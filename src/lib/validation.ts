@@ -1,10 +1,22 @@
 import { z } from "zod";
+import { isValidCPF } from "@/lib/cpf";
+
+// RN-101.4/RN-104.5: mínimo 8 caracteres, com pelo menos uma letra e um número.
+const PASSWORD_MESSAGE = "A senha precisa ter ao menos 8 caracteres, com letras e números.";
+const passwordSchema = z
+  .string()
+  .min(8, PASSWORD_MESSAGE)
+  .regex(/[A-Za-z]/, PASSWORD_MESSAGE)
+  .regex(/[0-9]/, PASSWORD_MESSAGE);
 
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Informe seu nome completo."),
   email: z.string().trim().toLowerCase().email("E-mail inválido."),
-  password: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres."),
+  password: passwordSchema,
   phone: z.string().trim().min(8, "Informe um telefone válido."),
+  termsAccepted: z
+    .boolean()
+    .refine((v) => v === true, "É preciso aceitar os termos de uso e a política de privacidade."),
 });
 
 export const loginSchema = z.object({
@@ -19,7 +31,7 @@ export const forgotPasswordSchema = z.object({
 
 export const resetPasswordSchema = z
   .object({
-    password: z.string().min(8, "A senha precisa ter no mínimo 8 caracteres."),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -34,7 +46,11 @@ const cpfRegex = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/;
 // opcionais aqui usam `.nullish()` em vez de `.optional()`.
 export const checkoutSchema = z.object({
   email: z.string().trim().toLowerCase().email("E-mail inválido."),
-  cpf: z.string().trim().regex(cpfRegex, "CPF inválido."),
+  cpf: z
+    .string()
+    .trim()
+    .regex(cpfRegex, "CPF inválido.")
+    .refine(isValidCPF, "Confira o CPF digitado."),
   deliveryMethod: z.enum(["DELIVERY", "PICKUP"]),
   cep: z.string().trim().nullish(),
   street: z.string().trim().nullish(),

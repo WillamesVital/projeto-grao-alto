@@ -14,11 +14,14 @@ import {
   getCurrentUser,
 } from "@/lib/auth";
 import { mergeGuestCartIntoUser } from "@/lib/cart";
+import { getRequestIp } from "@/lib/request";
 import {
   issueEmailVerification,
   issuePasswordReset,
+  peekPasswordReset,
   consumePasswordReset,
 } from "@/lib/account-tokens";
+import { sendMail, passwordChangedEmailHtml } from "@/lib/mailer";
 import {
   registerSchema,
   loginSchema,
@@ -38,6 +41,7 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
     email: formData.get("email"),
     password: formData.get("password"),
     phone: formData.get("phone"),
+    termsAccepted: formData.get("termsAccepted") === "on",
   });
 
   if (!parsed.success) {
@@ -58,8 +62,10 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
   }
 
   const passwordHash = await hashPassword(password);
+  // RN-101.7 (LGPD): o aceite dos termos é registrado com data e IP.
+  const ip = await getRequestIp();
   const user = await prisma.user.create({
-    data: { name, email, phone, passwordHash },
+    data: { name, email, phone, passwordHash, termsAcceptedAt: new Date(), termsAcceptedIp: ip },
   });
 
   await issueEmailVerification(user.id, user.email);
@@ -162,20 +168,40 @@ export async function resetPasswordAction(
     return { ok: false, message: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
 
-  const result = await consumePasswordReset(token);
-  if (!result.ok) {
+  const peek = await peekPasswordReset(token);
+  if (!peek.ok) {
     const messages: Record<string, string> = {
       not_found: "Link inválido.",
       used: "Este link já foi usado.",
       expired: "Este link expirou. Solicite uma nova redefinição.",
     };
-    return { ok: false, message: messages[result.reason] };
+    return { ok: false, message: messages[peek.reason] };
+  }
+
+  // RN-104.5: nova senha não pode ser igual à anterior — checa antes de
+  // "queimar" o token, para o cliente poder tentar de novo com outra senha.
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: peek.userId } });
+  const samePassword = await verifyPassword(parsed.data.password, user.passwordHash);
+  if (samePassword) {
+    return { ok: false, message: "Escolha uma senha diferente da anterior." };
+  }
+
+  const result = await consumePasswordReset(token);
+  if (!result.ok) {
+    return { ok: false, message: "Este link já foi usado ou expirou." };
   }
 
   const passwordHash = await hashPassword(parsed.data.password);
   await prisma.user.update({
     where: { id: result.userId },
     data: { passwordHash, tokenVersion: { increment: 1 }, failedLoginAttempts: 0, lockedUntil: null },
+  });
+
+  // RN-104.7: a conta é sempre notificada por e-mail quando a senha muda.
+  await sendMail({
+    to: user.email,
+    subject: "Sua senha foi alterada — Grão Alto",
+    html: passwordChangedEmailHtml(),
   });
 
   return { ok: true, message: "Senha redefinida com sucesso! Você já pode fazer login." };

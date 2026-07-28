@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { randomBytes } from "crypto";
+import { randomBytes, randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -135,14 +135,33 @@ async function syncCartPrices<T extends PersistedCart>(cart: T): Promise<T> {
   return cart;
 }
 
-export async function addItemToCart(productVariantId: string, quantity: number) {
+export type QuantityCapReason = "STOCK" | "MAX_PER_ITEM" | null;
+export type QuantityChangeResult = { quantity: number; cappedReason: QuantityCapReason };
+
+function capReasonFor(requested: number, applied: number, stockQty: number): QuantityCapReason {
+  if (requested <= applied) return null;
+  return stockQty < MAX_QTY_PER_ITEM ? "STOCK" : "MAX_PER_ITEM";
+}
+
+/** RN-301/RN-302.6: quantidade nunca passa de 10 por item nem do estoque
+ * disponível — o que for menor. */
+export async function addItemToCart(
+  productVariantId: string,
+  quantity: number,
+): Promise<QuantityChangeResult> {
   const cart = await getOrCreateCartForMutation();
   const variant = await prisma.productVariant.findUniqueOrThrow({
     where: { id: productVariantId },
   });
 
   const existing = cart.items.find((i) => i.productVariantId === productVariantId);
-  const desiredQty = Math.min(MAX_QTY_PER_ITEM, (existing?.quantity ?? 0) + quantity);
+  const cap = Math.min(MAX_QTY_PER_ITEM, variant.stockQty);
+  if (cap <= 0) {
+    return { quantity: existing?.quantity ?? 0, cappedReason: "STOCK" };
+  }
+
+  const requestedTotal = (existing?.quantity ?? 0) + quantity;
+  const desiredQty = Math.min(cap, requestedTotal);
 
   if (existing) {
     await prisma.cartItem.update({
@@ -155,16 +174,27 @@ export async function addItemToCart(productVariantId: string, quantity: number) 
         cartId: cart.id,
         productId: variant.productId,
         productVariantId: variant.id,
-        quantity: Math.min(MAX_QTY_PER_ITEM, quantity),
+        quantity: desiredQty,
         unitPriceCents: variant.priceCents,
       },
     });
   }
+
+  return { quantity: desiredQty, cappedReason: capReasonFor(requestedTotal, desiredQty, variant.stockQty) };
 }
 
-export async function updateCartItemQuantity(itemId: string, quantity: number) {
-  const clamped = Math.max(1, Math.min(MAX_QTY_PER_ITEM, quantity));
+export async function updateCartItemQuantity(
+  itemId: string,
+  quantity: number,
+): Promise<QuantityChangeResult> {
+  const item = await prisma.cartItem.findUniqueOrThrow({
+    where: { id: itemId },
+    include: { productVariant: true },
+  });
+  const cap = Math.min(MAX_QTY_PER_ITEM, item.productVariant.stockQty);
+  const clamped = Math.max(1, Math.min(Math.max(cap, 1), quantity));
   await prisma.cartItem.update({ where: { id: itemId }, data: { quantity: clamped } });
+  return { quantity: clamped, cappedReason: capReasonFor(quantity, clamped, item.productVariant.stockQty) };
 }
 
 export async function removeCartItem(itemId: string) {
@@ -208,11 +238,15 @@ export async function mergeGuestCartIntoUser(userId: string) {
   }
 
   for (const guestItem of guestCart.items) {
+    const variant = await prisma.productVariant.findUnique({ where: { id: guestItem.productVariantId } });
+    const cap = Math.min(MAX_QTY_PER_ITEM, variant?.stockQty ?? 0);
+    if (cap <= 0) continue;
+
     const existing = userCart.items.find((i) => i.productVariantId === guestItem.productVariantId);
     if (existing) {
       await prisma.cartItem.update({
         where: { id: existing.id },
-        data: { quantity: Math.min(MAX_QTY_PER_ITEM, existing.quantity + guestItem.quantity) },
+        data: { quantity: Math.min(cap, existing.quantity + guestItem.quantity) },
       });
     } else {
       await prisma.cartItem.create({
@@ -220,7 +254,7 @@ export async function mergeGuestCartIntoUser(userId: string) {
           cartId: userCart.id,
           productId: guestItem.productId,
           productVariantId: guestItem.productVariantId,
-          quantity: guestItem.quantity,
+          quantity: Math.min(cap, guestItem.quantity),
           unitPriceCents: guestItem.unitPriceCents,
         },
       });
@@ -233,4 +267,24 @@ export async function mergeGuestCartIntoUser(userId: string) {
 
 export async function lockCartForCheckout(cartId: string) {
   await prisma.cart.update({ where: { id: cartId }, data: { checkoutLockedAt: new Date() } });
+}
+
+/**
+ * Garante uma chave de idempotência estável para o carrinho, gerada uma
+ * única vez e reaproveitada em todo reload da página de checkout (RN-410.1)
+ * — ao contrário de uma chave gerada a cada render, que perderia a proteção
+ * contra double-submit assim que a página fosse recarregada. É limpa quando
+ * o pedido é efetivamente criado (`placeOrderAction`), para que o próximo
+ * checkout no mesmo carrinho gere uma chave nova.
+ */
+export async function ensureCheckoutIdempotencyKey(cartId: string): Promise<string> {
+  const cart = await prisma.cart.findUniqueOrThrow({ where: { id: cartId } });
+  if (cart.checkoutIdempotencyKey) return cart.checkoutIdempotencyKey;
+  const key = randomUUID();
+  await prisma.cart.update({ where: { id: cartId }, data: { checkoutIdempotencyKey: key } });
+  return key;
+}
+
+export async function clearCheckoutIdempotencyKey(cartId: string) {
+  await prisma.cart.update({ where: { id: cartId }, data: { checkoutIdempotencyKey: null } });
 }

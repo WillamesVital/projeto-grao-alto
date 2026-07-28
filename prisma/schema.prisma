@@ -48,6 +48,9 @@ enum PaymentStatus {
 
 enum OrderStatus {
   AGUARDANDO_PAGAMENTO
+  PAGO
+  EM_CONFERENCIA
+  EXPIRADO
   EM_PREPARO
   PRONTO
   A_CAMINHO
@@ -68,6 +71,8 @@ model User {
   lockedUntil         DateTime?
   tokenVersion        Int       @default(0)
   fromWhatsappInvite  Boolean   @default(false)
+  termsAcceptedAt     DateTime?
+  termsAcceptedIp     String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -123,11 +128,25 @@ model Product {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  variants  ProductVariant[]
-  cartItems CartItem[]
-  orderItems OrderItem[]
+  variants        ProductVariant[]
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+  restockRequests RestockRequest[]
 
   @@index([active])
+}
+
+/** GA-206 "Avise-me quando chegar" — captura só o e-mail (RN-206.4); o
+ * disparo do aviso quando o estoque volta é manual, feito pela Bia. */
+model RestockRequest {
+  id         String    @id @default(cuid())
+  productId  String
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  email      String
+  createdAt  DateTime  @default(now())
+  notifiedAt DateTime?
+
+  @@unique([productId, email])
 }
 
 model ProductVariant {
@@ -172,14 +191,15 @@ model Coupon {
 }
 
 model Cart {
-  id               String    @id @default(cuid())
-  userId           String?
-  user             User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  guestToken       String?   @unique
-  expiresAt        DateTime
-  checkoutLockedAt DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                     String    @id @default(cuid())
+  userId                 String?
+  user                   User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guestToken             String?   @unique
+  expiresAt              DateTime
+  checkoutLockedAt       DateTime?
+  checkoutIdempotencyKey String?   @unique
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   items CartItem[]
 
@@ -237,6 +257,10 @@ model Order {
   paymentMethod PaymentMethod
   status        OrderStatus   @default(AGUARDANDO_PAGAMENTO)
 
+  /** GA-409: faixas liberadas no checkout no momento em que este pedido foi
+   * criado (RN-409.5) — auditoria do rollout, não afeta o pedido em si. */
+  checkoutFlagSnapshot String?
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   paidAt    DateTime?
@@ -276,6 +300,8 @@ model Payment {
   installments          Int?
   gatewayTransactionId  String?       @unique
   declineReason         String?
+  paidAmountCents       Int?
+  reviewNote            String?
   createdAt             DateTime      @default(now())
   confirmedAt           DateTime?
 }

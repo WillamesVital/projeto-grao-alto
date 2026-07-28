@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <>
-      <header className="border-b border-outline-variant/20 bg-coffee-roast text-white">
+      <header className="border-b border-outline-variant/20 bg-coffee-roast text-white print:hidden">
         <div className="mx-auto flex h-16 max-w-(--container-max) items-center justify-between px-margin-mobile md:px-margin-desktop">
           <div className="flex items-center gap-8">
             <Link href="/admin" className="font-display text-title-lg font-bold">

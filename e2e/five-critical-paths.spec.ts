@@ -13,8 +13,9 @@ function uniqueEmail(tag: string) {
 }
 
 // Senha de teste (fixture), usada só para uma conta descartável criada e
-// destruída dentro deste teste. Não protege nada real.
-const TEST_FIXTURE_PASSWORD = "e2e-fixture-nao-e-senha-real";
+// destruída dentro deste teste. Não protege nada real. Precisa ter letra e
+// número para satisfazer RN-101.4.
+const TEST_FIXTURE_PASSWORD = "e2e-fixture-nao-e-senha-real-2026";
 
 // A conta compartilhada usada pelos testes 2, 3 e 4 precisa começar cada
 // execução com o carrinho vazio, senão pedidos de execuções anteriores
@@ -45,6 +46,7 @@ test.describe.serial("5 caminhos críticos do MVP", () => {
     await page.fill("#email", email);
     await page.fill("#password", TEST_FIXTURE_PASSWORD);
     await page.fill("#phone", "81999990001");
+    await page.check("input[name=termsAccepted]");
     await page.click("button[type=submit]");
     await expect(page.getByRole("heading", { name: "Verifique seu e-mail" })).toBeVisible();
 
@@ -60,7 +62,7 @@ test.describe.serial("5 caminhos críticos do MVP", () => {
     await expect(page.getByText("Adicionado ao carrinho!").first()).toBeVisible();
 
     await page.goto("/checkout", { waitUntil: "domcontentloaded" });
-    await page.fill("input[name=cpf]", "123.456.789-00");
+    await page.fill("input[name=cpf]", "123.456.789-09");
     await page.fill("input[name=street]", "Rua das Flores");
     await page.fill("input[name=number]", "100");
     await page.fill("input[name=neighborhood]", "Boa Viagem");
@@ -90,7 +92,7 @@ test.describe.serial("5 caminhos críticos do MVP", () => {
     await expect(page.getByText("Adicionado ao carrinho!").first()).toBeVisible();
 
     await page.goto("/checkout", { waitUntil: "domcontentloaded" });
-    await page.fill("input[name=cpf]", "123.456.789-00");
+    await page.fill("input[name=cpf]", "123.456.789-09");
     await page.fill("input[name=street]", "Rua Sem Nome");
     await page.fill("input[name=number]", "50");
     await page.fill("input[name=neighborhood]", "Bairro Fora Da Área De Cobertura");
@@ -126,7 +128,7 @@ test.describe.serial("5 caminhos críticos do MVP", () => {
     await expect(page.getByText("Adicionado ao carrinho!").first()).toBeVisible();
 
     await page.goto("/checkout", { waitUntil: "domcontentloaded" });
-    await page.fill("input[name=cpf]", "123.456.789-00");
+    await page.fill("input[name=cpf]", "123.456.789-09");
     await page.click("button:has-text('Retirar na loja')");
     await expect(page.getByText("Retirada na loja").first()).toBeVisible();
     await expect(page.getByText("Grátis").first()).toBeVisible();

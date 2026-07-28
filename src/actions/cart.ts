@@ -4,14 +4,16 @@ import { revalidatePath } from "next/cache";
 import { addItemToCart, updateCartItemQuantity, removeCartItem } from "@/lib/cart";
 
 export async function addToCartAction(productVariantId: string, quantity: number) {
-  await addItemToCart(productVariantId, quantity);
+  const result = await addItemToCart(productVariantId, quantity);
   revalidatePath("/", "layout");
+  return result;
 }
 
 export async function updateQuantityAction(itemId: string, quantity: number) {
-  await updateCartItemQuantity(itemId, quantity);
+  const result = await updateCartItemQuantity(itemId, quantity);
   revalidatePath("/carrinho");
   revalidatePath("/", "layout");
+  return result;
 }
 
 export async function removeItemAction(itemId: string) {

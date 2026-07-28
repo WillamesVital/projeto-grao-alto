@@ -14,6 +14,7 @@ export default function LoginPage() {
     <AuthShell
       brandTitle="Que bom te ver de novo."
       brandBody="Continue de onde parou: seu carrinho e seus pedidos estão te esperando."
+      brandImageSrc="/images/img-cadastro-login.png"
     >
       <header className="mb-10">
         <h1 className="font-display mb-2 text-headline-md text-coffee-roast">Entrar na conta</h1>

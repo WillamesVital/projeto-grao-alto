@@ -7,6 +7,9 @@ import type { OrderStatus } from "@prisma/client";
 
 const OPTIONS: OrderStatus[] = [
   "AGUARDANDO_PAGAMENTO",
+  "PAGO",
+  "EM_CONFERENCIA",
+  "EXPIRADO",
   "EM_PREPARO",
   "PRONTO",
   "A_CAMINHO",

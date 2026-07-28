@@ -24,6 +24,7 @@ export default function CadastroPage() {
       <AuthShell
         brandTitle="Bem-vindo ao ritual do café."
         brandBody="Junte-se à nossa comunidade de entusiastas e tenha acesso a seleções exclusivas dos melhores grãos de Pernambuco."
+        brandImageSrc="/images/img-cadastro-login.png"
       >
         <div className="text-center">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-tertiary-fixed text-plantation-green">
@@ -48,6 +49,7 @@ export default function CadastroPage() {
     <AuthShell
       brandTitle="Bem-vindo ao ritual do café."
       brandBody="Junte-se à nossa comunidade de entusiastas e tenha acesso a seleções exclusivas dos melhores grãos de Pernambuco."
+      brandImageSrc="/images/img-cadastro-login.png"
     >
       <header className="mb-10">
         <h1 className="font-display mb-2 text-headline-md text-coffee-roast">Crie sua conta</h1>
@@ -129,6 +131,31 @@ export default function CadastroPage() {
             Enviaremos um link de confirmação para o seu e-mail após o cadastro. Por favor, verifique
             sua caixa de entrada.
           </p>
+        </div>
+
+        <div className="space-y-2">
+          <label className="flex items-start gap-3 text-label-md text-on-surface-variant">
+            <input
+              type="checkbox"
+              name="termsAccepted"
+              required
+              className="mt-1 h-4 w-4 rounded border-outline-variant text-coffee-roast focus:ring-honey-amber"
+            />
+            <span>
+              Li e aceito os{" "}
+              <Link href="/sobre" className="font-bold text-coffee-roast hover:text-honey-amber">
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link href="/sobre" className="font-bold text-coffee-roast hover:text-honey-amber">
+                Política de Privacidade
+              </Link>
+              .
+            </span>
+          </label>
+          {state.fieldErrors?.termsAccepted && (
+            <p className="text-label-sm text-error-red">{state.fieldErrors.termsAccepted}</p>
+          )}
         </div>
 
         {state.message && !state.ok && (

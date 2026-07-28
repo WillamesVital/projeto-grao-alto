@@ -8,10 +8,16 @@ import { confirmOrderPayment } from "@/lib/orders";
  * o botão "Já paguei" da tela de espera (simulação para o curso) — mas o
  * contrato (idempotente, seguro contra duplicidade e atraso) é o mesmo que
  * usaríamos com um provedor real.
+ *
+ * RN-407.7: um webhook chegando DEPOIS da expiração do Pix, com pagamento
+ * efetivamente realizado, nunca é rejeitado — "dinheiro recebido nunca é
+ * ignorado". `confirmOrderPayment` reativa o pedido como pago mesmo que ele
+ * já tenha sido marcado `EXPIRADO`.
  */
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const gatewayTransactionId = body?.gatewayTransactionId as string | undefined;
+  const paidAmountCents = typeof body?.paidAmountCents === "number" ? body.paidAmountCents : undefined;
   if (!gatewayTransactionId) {
     return NextResponse.json({ ok: false, error: "gatewayTransactionId ausente." }, { status: 400 });
   }
@@ -21,11 +27,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Pagamento não encontrado." }, { status: 404 });
   }
 
-  if (payment.method === "PIX" && payment.pixExpiresAt && payment.pixExpiresAt.getTime() < Date.now()) {
-    if (payment.status === "PENDING") {
-      await prisma.payment.update({ where: { id: payment.id }, data: { status: "EXPIRED" } });
-    }
-    return NextResponse.json({ ok: false, error: "Pix expirado." }, { status: 410 });
+  const order = await prisma.order.findUniqueOrThrow({ where: { id: payment.orderId } });
+
+  // RN-407.8: valor pago divergente do valor do pedido não confirma
+  // automaticamente — vai para conferência manual da Bia.
+  if (paidAmountCents != null && paidAmountCents !== order.totalCents) {
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        paidAmountCents,
+        reviewNote: `Valor pago (${paidAmountCents / 100}) diverge do valor do pedido (${order.totalCents / 100}).`,
+      },
+    });
+    await prisma.order.update({ where: { id: order.id }, data: { status: "EM_CONFERENCIA" } });
+    return NextResponse.json({ ok: false, error: "Valor divergente. Pedido em conferência.", orderNumber: order.orderNumber }, { status: 409 });
   }
 
   // Idempotente: se já foi processado (webhook duplicado ou atrasado), apenas

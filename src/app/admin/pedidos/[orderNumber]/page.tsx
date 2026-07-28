@@ -45,6 +45,26 @@ export default async function AdminOrderDetailPage({
         <AdminStatusForm orderNumber={order.orderNumber} currentStatus={order.status} />
       </div>
 
+      {order.status === "EM_CONFERENCIA" && (
+        <div className="mb-8 rounded-lg border border-honey-amber/30 bg-honey-amber/10 p-6">
+          <h3 className="mb-2 text-title-lg text-coffee-roast">Conferência manual necessária</h3>
+          <p className="text-body-md text-on-surface-variant">
+            Valor esperado: <strong>{formatBRL(order.totalCents)}</strong>
+            {order.payments.some((p) => p.paidAmountCents != null) && (
+              <>
+                {" "}
+                · Valor pago: <strong>{formatBRL(order.payments.find((p) => p.paidAmountCents != null)!.paidAmountCents!)}</strong>
+              </>
+            )}
+          </p>
+          {order.payments.find((p) => p.reviewNote)?.reviewNote && (
+            <p className="mt-2 text-body-md text-on-surface-variant">
+              {order.payments.find((p) => p.reviewNote)?.reviewNote}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-gutter md:grid-cols-12">
         <div className="space-y-gutter md:col-span-8">
           <div className="rounded-lg border border-outline-variant/10 bg-white p-6">

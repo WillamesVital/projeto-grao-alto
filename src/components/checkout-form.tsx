@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import { formatBRL, GRIND_LABELS, weightLabel } from "@/lib/format";
 import { placeOrderAction } from "@/actions/checkout";
-import { lookupCepAction, quoteShippingPreviewAction, previewCouponAction } from "@/actions/checkout";
+import { lookupCepAction, previewOrderPricingAction } from "@/actions/checkout";
 import type { FormState } from "@/actions/auth";
 import { MIN_INSTALLMENT_CENTS, MAX_INSTALLMENTS } from "@/lib/payment-gateway";
 
@@ -59,6 +59,7 @@ export default function CheckoutForm({
   const [shipping, setShipping] = useState<ShippingOption | null>(null);
 
   const [couponCode, setCouponCode] = useState("");
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | undefined>(undefined);
   const [couponResult, setCouponResult] = useState<
     { ok: true; discountCents: number } | { ok: false; error: string } | null
   >(null);
@@ -66,17 +67,29 @@ export default function CheckoutForm({
   const [paymentMethod, setPaymentMethod] = useState<"CARD" | "PIX">("CARD");
   const [installments, setInstallments] = useState(1);
 
+  // Cupom e frete são resolvidos por uma única chamada (`previewOrderPricingAction`,
+  // a mesma função usada de verdade em `placeOrderAction`), para que a prévia
+  // exibida na tela nunca divirja da cobrança final — inclusive quando o
+  // cupom derruba o subtotal abaixo do mínimo de frete grátis (RN-403.6).
   useEffect(() => {
     startTransition(async () => {
-      const option = await quoteShippingPreviewAction({
+      const result = await previewOrderPricingAction({
         deliveryMethod,
         neighborhood,
         subtotalCents,
         totalWeightGrams,
+        couponCode: appliedCouponCode,
       });
-      setShipping(option);
+      setShipping(result.shipping);
+      if (appliedCouponCode) {
+        setCouponResult(
+          result.couponError
+            ? { ok: false, error: result.couponError }
+            : { ok: true, discountCents: result.discountCents },
+        );
+      }
     });
-  }, [deliveryMethod, neighborhood, subtotalCents, totalWeightGrams]);
+  }, [deliveryMethod, neighborhood, subtotalCents, totalWeightGrams, appliedCouponCode]);
 
   async function handleCepBlur() {
     const digits = cep.replace(/\D/g, "");
@@ -92,9 +105,8 @@ export default function CheckoutForm({
     }
   }
 
-  async function handleApplyCoupon() {
-    const result = await previewCouponAction(couponCode, subtotalCents);
-    setCouponResult(result);
+  function handleApplyCoupon() {
+    setAppliedCouponCode(couponCode);
   }
 
   const discountCents = couponResult?.ok ? couponResult.discountCents : 0;
@@ -110,7 +122,9 @@ export default function CheckoutForm({
       <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
       <input type="hidden" name="deliveryMethod" value={deliveryMethod} />
       <input type="hidden" name="paymentMethod" value={paymentMethod} />
-      {couponResult?.ok && <input type="hidden" name="couponCode" value={couponCode} />}
+      {couponResult?.ok && appliedCouponCode && (
+        <input type="hidden" name="couponCode" value={appliedCouponCode} />
+      )}
 
       <div className="space-y-gutter lg:col-span-8">
         {/* 1. Identificação */}
@@ -462,6 +476,19 @@ export default function CheckoutForm({
               * Pagamento simulado para fins do curso — nenhuma cobrança real é feita.
             </p>
           </div>
+        </div>
+
+        <div className="rounded-lg bg-surface-container-low p-6">
+          <p className="mb-3 text-title-lg text-coffee-roast">Precisa de ajuda?</p>
+          <a
+            href="https://wa.me/5581999999999"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-label-md text-coffee-roast hover:text-honey-amber"
+          >
+            <span className="material-symbols-outlined text-[20px]">chat</span>
+            Falar com especialista pelo WhatsApp
+          </a>
         </div>
       </aside>
     </form>

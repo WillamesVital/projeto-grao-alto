@@ -28,7 +28,8 @@ export async function listProducts(query?: string) {
     ({ product }) =>
       normalizeText(product.name).includes(normalizedQuery) ||
       normalizeText(product.sensoryNotes).includes(normalizedQuery) ||
-      normalizeText(product.region).includes(normalizedQuery),
+      normalizeText(product.region).includes(normalizedQuery) ||
+      normalizeText(product.process).includes(normalizedQuery),
   );
 }
 

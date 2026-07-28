@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { formatBRL, GRIND_LABELS, weightLabel } from "@/lib/format";
@@ -15,18 +15,29 @@ type Props = {
   grind: string;
   quantity: number;
   unitPriceCents: number;
+  currentPriceCents: number;
   outOfStockFlag: boolean;
 };
 
 export default function CartItemRow(props: Props) {
   const [isPending, startTransition] = useTransition();
+  const [notice, setNotice] = useState<string | null>(null);
   const router = useRouter();
 
   function changeQty(delta: number) {
     const next = props.quantity + delta;
-    if (next < 1 || next > 10) return;
+    if (next < 1) return;
+    if (next > 10) {
+      setNotice("Máximo de 10 unidades por item. Para mais, fale com a loja pelo WhatsApp.");
+      return;
+    }
     startTransition(async () => {
-      await updateQuantityAction(props.id, next);
+      const result = await updateQuantityAction(props.id, next);
+      if (result.cappedReason === "STOCK") {
+        setNotice(`Temos apenas ${result.quantity} unidade(s) em estoque para este item.`);
+      } else {
+        setNotice(null);
+      }
       router.refresh();
     });
   }
@@ -67,26 +78,36 @@ export default function CartItemRow(props: Props) {
           </button>
         </div>
         <div className="mt-4 flex items-end justify-between">
-          <div className="flex h-10 items-center rounded-full border border-outline-variant p-1">
-            <button
-              onClick={() => changeQty(-1)}
-              disabled={isPending}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-coffee-roast transition-colors hover:bg-surface-container-low"
-            >
-              −
-            </button>
-            <span className="w-10 text-center font-bold text-coffee-roast">{props.quantity}</span>
-            <button
-              onClick={() => changeQty(1)}
-              disabled={isPending}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-coffee-roast transition-colors hover:bg-surface-container-low"
-            >
-              +
-            </button>
+          <div>
+            <div className="flex h-10 items-center rounded-full border border-outline-variant p-1">
+              <button
+                onClick={() => changeQty(-1)}
+                disabled={isPending}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-coffee-roast transition-colors hover:bg-surface-container-low"
+              >
+                −
+              </button>
+              <span className="w-10 text-center font-bold text-coffee-roast">{props.quantity}</span>
+              <button
+                onClick={() => changeQty(1)}
+                disabled={isPending}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-coffee-roast transition-colors hover:bg-surface-container-low"
+              >
+                +
+              </button>
+            </div>
+            {notice && <p className="mt-2 max-w-[220px] text-label-sm text-honey-amber">{notice}</p>}
           </div>
-          <p className="font-display text-headline-md text-coffee-roast">
-            {formatBRL(props.unitPriceCents * props.quantity)}
-          </p>
+          <div className="text-right">
+            {props.currentPriceCents > props.unitPriceCents && (
+              <p className="text-label-sm text-on-surface-variant line-through">
+                {formatBRL(props.currentPriceCents * props.quantity)}
+              </p>
+            )}
+            <p className="font-display text-headline-md text-coffee-roast">
+              {formatBRL(props.unitPriceCents * props.quantity)}
+            </p>
+          </div>
         </div>
       </div>
     </div>

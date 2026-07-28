@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getCart, cartTotals } from "@/lib/cart";
@@ -13,10 +12,9 @@ export default async function CheckoutPage() {
   if (cart.items.length === 0) redirect("/carrinho");
   if (cart.items.some((i) => i.outOfStockFlag)) redirect("/carrinho");
 
-  await ensureCheckoutLockAction();
+  const idempotencyKey = await ensureCheckoutLockAction();
 
   const subtotalCents = cartTotals(cart);
-  const idempotencyKey = randomUUID();
 
   return (
     <div className="mx-auto max-w-(--container-max) px-margin-mobile py-12 md:px-margin-desktop">

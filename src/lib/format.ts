@@ -32,6 +32,9 @@ export function weightLabel(grams: number) {
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   AGUARDANDO_PAGAMENTO: "Aguardando pagamento",
+  PAGO: "Pagamento confirmado",
+  EM_CONFERENCIA: "Em conferência",
+  EXPIRADO: "Pix expirado",
   EM_PREPARO: "Em preparo",
   PRONTO: "Pronto",
   A_CAMINHO: "A caminho",
@@ -41,6 +44,9 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
 
 export const ORDER_STATUS_BADGE_CLASSES: Record<string, string> = {
   AGUARDANDO_PAGAMENTO: "bg-secondary-fixed text-on-secondary-fixed-variant",
+  PAGO: "bg-plantation-green/15 text-plantation-green",
+  EM_CONFERENCIA: "bg-honey-amber/25 text-on-secondary-container",
+  EXPIRADO: "bg-error-container text-on-error-container",
   EM_PREPARO: "bg-honey-amber/20 text-on-secondary-container",
   PRONTO: "bg-tertiary-fixed text-on-tertiary-container",
   A_CAMINHO: "bg-tertiary-fixed text-on-tertiary-container",
@@ -50,6 +56,7 @@ export const ORDER_STATUS_BADGE_CLASSES: Record<string, string> = {
 
 export const ORDER_STATUS_FLOW = [
   "AGUARDANDO_PAGAMENTO",
+  "PAGO",
   "EM_PREPARO",
   "PRONTO",
   "A_CAMINHO",

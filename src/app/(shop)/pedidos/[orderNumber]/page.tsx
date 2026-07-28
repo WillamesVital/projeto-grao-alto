@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { generateNewPixAction } from "@/actions/checkout";
 import {
   formatBRL,
   formatDateLong,
@@ -45,7 +46,25 @@ export default async function OrderDetailPage({
         </span>
       </div>
 
-      {order.status !== "CANCELADO" && (
+      {order.status === "EM_CONFERENCIA" && (
+        <p className="mb-8 rounded-lg bg-honey-amber/10 px-4 py-3 text-body-md text-on-secondary-container">
+          Recebemos seu pagamento e estamos conferindo a disponibilidade do pedido com a equipe. Em breve entramos em contato.
+        </p>
+      )}
+      {order.status === "EXPIRADO" && (
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-lg bg-error-container px-4 py-3 text-body-md text-on-error-container">
+          <span>O prazo do Pix acabou sem pagamento.</span>
+          {order.paymentMethod === "PIX" && (
+            <form action={generateNewPixAction.bind(null, order.orderNumber)}>
+              <button type="submit" className="rounded-lg bg-coffee-roast px-4 py-2 font-bold text-white hover:bg-honey-amber">
+                Gerar novo Pix
+              </button>
+            </form>
+          )}
+        </div>
+      )}
+
+      {(ORDER_STATUS_FLOW as readonly string[]).includes(order.status) && (
         <ol className="mb-10 flex flex-wrap gap-4">
           {ORDER_STATUS_FLOW.map((step, i) => (
             <li

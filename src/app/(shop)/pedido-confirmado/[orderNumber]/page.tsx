@@ -18,7 +18,11 @@ export default async function OrderConfirmedPage({
     include: { items: true },
   });
   if (!order || order.userId !== user.id) notFound();
-  if (order.status === "AGUARDANDO_PAGAMENTO") redirect(`/checkout/pix/${order.orderNumber}`);
+  if (order.status === "AGUARDANDO_PAGAMENTO" || order.status === "EXPIRADO") {
+    redirect(`/checkout/pix/${order.orderNumber}`);
+  }
+
+  const inManualReview = order.status === "EM_CONFERENCIA";
 
   const deliveryLabel =
     order.deliveryMethod === "PICKUP"
@@ -28,12 +32,20 @@ export default async function OrderConfirmedPage({
   return (
     <div className="mx-auto max-w-4xl px-margin-mobile py-16 md:px-margin-desktop">
       <div className="mb-12 text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-plantation-green text-on-primary shadow-sm">
-          <span className="material-symbols-outlined text-4xl">check_circle</span>
+        <div
+          className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full text-on-primary shadow-sm ${inManualReview ? "bg-honey-amber" : "bg-plantation-green"}`}
+        >
+          <span className="material-symbols-outlined text-4xl">
+            {inManualReview ? "hourglass_top" : "check_circle"}
+          </span>
         </div>
-        <h1 className="font-display mb-2 text-headline-lg text-coffee-roast">Pedido Confirmado!</h1>
+        <h1 className="font-display mb-2 text-headline-lg text-coffee-roast">
+          {inManualReview ? "Pagamento recebido — em conferência" : "Pedido Confirmado!"}
+        </h1>
         <p className="text-body-lg text-on-surface-variant">
-          O aroma do seu café especial já está quase no ar.
+          {inManualReview
+            ? "Seu pagamento chegou, mas precisamos confirmar o estoque com nossa equipe antes de seguir. Entraremos em contato em breve."
+            : "O aroma do seu café especial já está quase no ar."}
         </p>
         <div className="mt-8 inline-block rounded-xl border border-outline-variant/30 bg-surface-container px-6 py-3">
           <span className="text-label-md tracking-wider text-on-surface-variant uppercase">

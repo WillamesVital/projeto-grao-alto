@@ -17,6 +17,8 @@ async function makeOrderInput(overrides: Partial<Parameters<typeof createOrderId
     shippingZoneCode: null,
     shippingLabel: "Retirada na loja",
     shippingCents: 0,
+    discountCents: 0,
+    couponId: null,
     paymentMethod: "PIX" as const,
     items: [
       {

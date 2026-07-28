@@ -70,6 +70,17 @@ export async function issuePasswordReset(userId: string, email: string) {
   });
 }
 
+/** Confere validade do token sem marcá-lo como usado — permite checar a
+ * RN-104.5 (nova senha != anterior) antes de "queimar" o link. */
+export async function peekPasswordReset(rawToken: string): Promise<ConsumeTokenResult> {
+  const tokenHash = hashToken(rawToken);
+  const record = await prisma.passwordResetToken.findUnique({ where: { tokenHash } });
+  if (!record) return { ok: false, reason: "not_found" };
+  if (record.usedAt) return { ok: false, reason: "used" };
+  if (record.expiresAt.getTime() < Date.now()) return { ok: false, reason: "expired" };
+  return { ok: true, userId: record.userId };
+}
+
 export async function consumePasswordReset(rawToken: string): Promise<ConsumeTokenResult> {
   const tokenHash = hashToken(rawToken);
   const record = await prisma.passwordResetToken.findUnique({ where: { tokenHash } });

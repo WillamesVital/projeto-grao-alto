@@ -17,6 +17,12 @@ export default async function SiteHeader({ cartCount }: { cartCount: number }) {
             <Link href="/" className="border-b-2 border-coffee-roast pb-1 text-label-md font-bold text-coffee-roast">
               Cafés
             </Link>
+            <Link href="/acessorios" className="text-label-md text-on-surface-variant transition-colors hover:text-coffee-roast">
+              Acessórios
+            </Link>
+            <Link href="/sobre" className="text-label-md text-on-surface-variant transition-colors hover:text-coffee-roast">
+              Sobre
+            </Link>
             <Link href="/pedidos" className="text-label-md text-on-surface-variant transition-colors hover:text-coffee-roast">
               Meus Pedidos
             </Link>

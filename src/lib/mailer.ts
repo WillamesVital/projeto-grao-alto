@@ -36,6 +36,13 @@ export function passwordResetEmailHtml(resetUrl: string) {
   `;
 }
 
+export function passwordChangedEmailHtml() {
+  return `
+    <h1>Sua senha foi alterada</h1>
+    <p>A senha da sua conta Grão Alto foi redefinida agora. Se não foi você, fale com a gente imediatamente.</p>
+  `;
+}
+
 export function orderConfirmationEmailHtml(params: {
   orderNumber: string;
   totalLabel: string;

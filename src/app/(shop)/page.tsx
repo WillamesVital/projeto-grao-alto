@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { listProducts } from "@/lib/catalog";
-import ProductCard from "@/components/product-card";
+import ProductCatalog from "@/components/product-catalog";
 
 export default async function CatalogPage({
   searchParams,
@@ -40,16 +40,7 @@ export default async function CatalogPage({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {results.map(({ product, defaultVariant, soldOut }) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              defaultVariant={defaultVariant}
-              soldOut={soldOut}
-            />
-          ))}
-        </div>
+        <ProductCatalog results={results} />
       )}
     </div>
   );
