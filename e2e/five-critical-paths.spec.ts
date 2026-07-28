@@ -12,6 +12,10 @@ function uniqueEmail(tag: string) {
   return `e2e-${tag}-${Date.now()}-${Math.floor(Math.random() * 1000)}@exemplo.com`;
 }
 
+// Senha de teste (fixture), usada só para uma conta descartável criada e
+// destruída dentro deste teste. Não protege nada real.
+const TEST_FIXTURE_PASSWORD = "e2e-fixture-nao-e-senha-real";
+
 // A conta compartilhada usada pelos testes 2, 3 e 4 precisa começar cada
 // execução com o carrinho vazio, senão pedidos de execuções anteriores
 // deixam o teste dependente de estado (o oposto de um E2E confiável).
@@ -39,14 +43,14 @@ test.describe.serial("5 caminhos críticos do MVP", () => {
     await page.goto("/cadastro", { waitUntil: "domcontentloaded" });
     await page.fill("#name", "Cliente Faixa A");
     await page.fill("#email", email);
-    await page.fill("#password", "SenhaForte123");
+    await page.fill("#password", TEST_FIXTURE_PASSWORD);
     await page.fill("#phone", "81999990001");
     await page.click("button[type=submit]");
     await expect(page.getByRole("heading", { name: "Verifique seu e-mail" })).toBeVisible();
 
     await page.goto("/login", { waitUntil: "domcontentloaded" });
     await page.fill("#email", email);
-    await page.fill("#password", "SenhaForte123");
+    await page.fill("#password", TEST_FIXTURE_PASSWORD);
     await page.click("button[type=submit]");
     await page.waitForURL("**/");
 
