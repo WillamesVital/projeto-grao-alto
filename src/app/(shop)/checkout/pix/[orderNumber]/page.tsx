@@ -56,17 +56,18 @@ export default async function PixWaitingPage({
         </div>
       ) : (
         <>
-          <div className="mx-auto mb-6 w-fit rounded-xl bg-surface-container p-6">
+          <div className="mx-auto mb-6 w-fit rounded-xl border-2 border-dashed border-honey-amber/40 bg-surface-container p-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qrDataUrl} alt="QR Code Pix" width={240} height={240} className="rounded bg-white" />
+            <p className="mt-4 max-w-[240px] text-body-md text-on-surface-variant">
+              Escaneie o código com o app do seu banco para finalizar seu pedido.
+            </p>
           </div>
-          <p className="mb-6 text-body-md text-on-surface-variant">
-            Escaneie o código no app do seu banco ou copie a chave abaixo. Expira em 30 minutos.
-          </p>
           <PixPaymentPanel
             orderNumber={order.orderNumber}
             gatewayTransactionId={payment.gatewayTransactionId}
             pixCode={payment.pixCode}
+            pixExpiresAt={payment.pixExpiresAt!.toISOString()}
           />
         </>
       )}
